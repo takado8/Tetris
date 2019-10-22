@@ -1,0 +1,17 @@
+﻿<Window x:Class="Tetris.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tetris"
+        mc:Ignorable="d"
+        Loaded="Window_Loaded"
+        Background="#222222"
+        KeyDown="Window_KeyDown"
+        KeyUp="Window_KeyUp"
+        Title="MainWindow" Height="612.265" Width="491.259">
+    <Grid Margin="0,0,0,0">
+        <Canvas x:Name="canvas" HorizontalAlignment="Left" Background="#4e4e50" Height="520" Margin="24,34,0,0" VerticalAlignment="Top" Width="260"/>
+
+    </Grid>
+</Window>
