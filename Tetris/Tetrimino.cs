@@ -17,13 +17,13 @@ namespace Tetris
         public List<Box> boxes;
         static int id = 0;
         public int tag;
+        static Random r = new Random();
+
         public Tetrimino()
         {
             // random shape
-            Random r = new Random();
             shape = shapes[r.Next(7)];
             build_tetrimino();
-
         }
 
         void build_tetrimino()
@@ -70,16 +70,14 @@ namespace Tetris
                 boxes.Add(box);
             }
             else if (shape == 'J')
-            {
-                
+            {         
                 box = new Box(color, tetr_tag, 0, 3 * Box.size);
                 boxes.Add(box);
                 for (int i = 0; i < 3; i++)
                 {
                     box = new Box(color, tetr_tag, Box.size, 3 * Box.size + (i * Box.size));
                     boxes.Add(box);
-                }
-                
+                }          
             }
             else if (shape == 'S')
             {
