@@ -22,7 +22,7 @@ namespace Tetris
     public partial class MainWindow : Window
     {
         DispatcherTimer timer = new DispatcherTimer();
-        List<Tetrimino> static_tetriminos = new List<Tetrimino>();
+        Dictionary<double, List<Tetrimino.Box>> static_boxes = new Dictionary<double, List<Tetrimino.Box>>();
         Tetrimino falling_tetrimino;
 
         public MainWindow()
@@ -32,10 +32,19 @@ namespace Tetris
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            init_dict();
             new_tetrimino();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
             timer.Tick += Timer_Tick;
             timer.IsEnabled = true;
+        }
+
+        void init_dict()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                static_boxes.Add(i * Tetrimino.Box.size, new List<Tetrimino.Box>());
+            }
         }
         int motion_step_set = 13;
         int motion_step = 0;
@@ -47,8 +56,7 @@ namespace Tetris
             var bottom = Canvas.GetTop(falling_tetrimino.boxes[3].rect);
             if (bottom >= canvas.Height - Tetrimino.Box.size) // bottom of map
             {
-                static_tetriminos.Add(falling_tetrimino);
-                new_tetrimino();
+                drop();
                 //return;
             }
             foreach (var box in falling_tetrimino.boxes)
@@ -57,12 +65,12 @@ namespace Tetris
                        Canvas.GetLeft(box.rect));
                 if (obstacle_in_way(box, 0))
                 {
-                    static_tetriminos.Add(falling_tetrimino);
-                    new_tetrimino();
+                    drop();
                     return;
                 }
             }
 
+            
 
             // }
 
@@ -77,6 +85,23 @@ namespace Tetris
                 current += Tetrimino.Box.size; // motion_step_set;
                 box.rect.SetValue(Canvas.TopProperty, current);
             }
+        }
+
+        void drop()
+        {
+            foreach (var box in falling_tetrimino.boxes)
+            {
+                static_boxes[Canvas.GetTop(box.rect)].Add(box);
+            }
+            check_win();
+            if(check_loose())
+            {
+                MessageBox.Show("Gamover!");
+                canvas.Children.Clear();
+                static_boxes.Clear();
+                init_dict();
+            }
+            new_tetrimino();
         }
 
         bool obstacle_in_way(Tetrimino.Box box, int dir)
@@ -117,54 +142,52 @@ namespace Tetris
 
         void check_win()
         {
-            Dictionary<double, List<Tetrimino.Box>> dict = new Dictionary<double, List<Tetrimino.Box>>();
-            for (int i = 0; i < 20; i++)
+            foreach (var box_list in static_boxes)
             {
-                dict.Add(i * Tetrimino.Box.size, new List<Tetrimino.Box>());
-            }
-            foreach (var tetrimino in static_tetriminos)
-            {
-                foreach (var box in tetrimino.boxes)
-                {
-                    dict[Canvas.GetTop(box.rect)].Add(box);
-                }
-            }
-            foreach(var boxes in dict)
-            {
-                if(boxes.Value.Count == 10)
-                {
-                    var threshold = Canvas.GetTop(boxes.Value[0].rect);
-                    foreach(var box in boxes.Value)
+                if (box_list.Value.Count == 10)
+                {         
+                    var threshold = box_list.Key;
+                    foreach (var box in box_list.Value)
                     {
                         canvas.Children.Remove(box.rect);
                     }
-                    foreach(var tetrimino in static_tetriminos)
+                    box_list.Value.Clear();
+
+                    double range = threshold - Tetrimino.Box.size;
+                    Console.WriteLine("range: " + range);
+                    for (double i = range; i > 0; i -= Tetrimino.Box.size)
                     {
-                        foreach(var box in tetrimino.boxes)
+                        Console.WriteLine("i: " + i);
+                        foreach (var box in static_boxes[i])
                         {
-                            var top = Canvas.GetTop(box.rect) + Tetrimino.Box.size;
-                            if (top < canvas.Height && top < threshold)
-                            {
-                                box.rect.SetValue(Canvas.TopProperty, top);
-                            }
+                            Console.WriteLine("old top: " + i);
+                            box.rect.SetValue(Canvas.TopProperty, i + Tetrimino.Box.size);
+                            Console.WriteLine("new top: " + (i + Tetrimino.Box.size));
+                        }
+
+                        static_boxes[(double)(i + Tetrimino.Box.size)].Clear();
+                        foreach(var b in static_boxes[(double)i])
+                        {
+                            static_boxes[(double)(i + Tetrimino.Box.size)].Add(b);
                         }
                     }
+                    
                 }
             }
+
+        }
+        bool check_loose()
+        {
+            if (static_boxes[0].Count > 0) return true;
+            else return false;
         }
         void new_tetrimino()
         {
-            if(static_tetriminos.Count > 0)
-            {
-                check_win();
-            }
             falling_tetrimino = new Tetrimino();
             foreach (var box in falling_tetrimino.boxes)
             {
                 canvas.Children.Add(box.rect);
             }
-
-
         }
         bool speed_key = false;
         private void Window_KeyDown(object sender, KeyEventArgs e)

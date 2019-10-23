@@ -22,7 +22,7 @@ namespace Tetris
         public Tetrimino()
         {
             // random shape
-            shape = shapes[r.Next(7)];
+            shape = 'O';//shapes[r.Next(7)];
             build_tetrimino();
         }
 
@@ -109,7 +109,7 @@ namespace Tetris
 
         public class Box
         {
-            public const uint size = 26;
+            public const int size = 26;
             public Brush color = Brushes.ForestGreen;
             public Rectangle rect;
             public int id;
