@@ -55,24 +55,20 @@ namespace Tetris
         {
             //if (motion_step++ == 0)
             //{
-            var bottom = Canvas.GetTop(falling_tetrimino.boxes[3].rect);
-            if (bottom >= canvas.Height - Tetrimino.Box.size) // bottom of map
-            {
-                drop();
-                //return;
-            }
+
             foreach (var box in falling_tetrimino.boxes)
             {
-                var point = new Point(Canvas.GetTop(box.rect) + Tetrimino.Box.size,
+                var top = Canvas.GetTop(box.rect);
+                var point = new Point(top + Tetrimino.Box.size,
                        Canvas.GetLeft(box.rect));
-                if (obstacle_in_way(box, 0))
+                if (obstacle_in_way(box, 0) || (top >= canvas.Height - Tetrimino.Box.size))
                 {
                     drop();
                     return;
                 }
             }
 
-            
+
 
             // }
 
@@ -96,7 +92,7 @@ namespace Tetris
                 static_boxes[Canvas.GetTop(box.rect)].Add(box);
             }
             check_win();
-            if(check_loose())
+            if (check_loose())
             {
                 MessageBox.Show("Gamover!");
                 canvas.Children.Clear();
@@ -148,7 +144,7 @@ namespace Tetris
             foreach (var box_list in static_boxes)
             {
                 if (box_list.Value.Count == 10)
-                {         
+                {
                     foreach (var box in box_list.Value)
                     {
                         canvas.Children.Remove(box.rect);
@@ -195,58 +191,39 @@ namespace Tetris
             }
             else if (e.Key == Key.Right)
             {
-                int max_right_index;
-                switch (falling_tetrimino.shape)
+                foreach (var box in falling_tetrimino.boxes)
                 {
-                    case 'T':
-                    case 'L': max_right_index = 2; break;
-                    case 'S': max_right_index = 1; break;
-                    default: max_right_index = 3; break;
+                    var left = Canvas.GetLeft(box.rect);
+                    if (obstacle_in_way(box, 2) ||
+                            left >= canvas.Width - Tetrimino.Box.size) return;
                 }
-                var max_right = falling_tetrimino.boxes[max_right_index];
-                var left = Canvas.GetLeft(max_right.rect);
-                if (left < canvas.Width - Tetrimino.Box.size)
+                foreach (var box in falling_tetrimino.boxes)
                 {
-                    foreach (var box in falling_tetrimino.boxes)
-                    {
-                        if (obstacle_in_way(box, 2)) return;
-                    }
-                    foreach (var box in falling_tetrimino.boxes)
-                    {
-                        var current = Canvas.GetLeft(box.rect);
-                        current += Tetrimino.Box.size;
-                        box.rect.SetValue(Canvas.LeftProperty, current);
-                    }
+                    var current = Canvas.GetLeft(box.rect);
+                    current += Tetrimino.Box.size;
+                    box.rect.SetValue(Canvas.LeftProperty, current);
                 }
             }
             else if (e.Key == Key.Left)
             {
-                int max_left_index = 0;
-                if (falling_tetrimino.shape == 'S')
+                foreach (var box in falling_tetrimino.boxes)
                 {
-                    max_left_index = 2;
+                    if (obstacle_in_way(box, 1) || Canvas.GetLeft(box.rect) <= 0) return;
                 }
-                else
+                foreach (var box in falling_tetrimino.boxes)
                 {
-                    max_left_index = 0;
-                }
-                if (Canvas.GetLeft(falling_tetrimino.boxes[max_left_index].rect) > 0)
-                {
-                    foreach (var box in falling_tetrimino.boxes)
-                    {
-                        if (obstacle_in_way(box, 1)) return;
-                    }
-                    foreach (var box in falling_tetrimino.boxes)
-                    {
-                        var current = Canvas.GetLeft(box.rect);
-                        current -= Tetrimino.Box.size;
-                        box.rect.SetValue(Canvas.LeftProperty, current);
-                    }
+                    var current = Canvas.GetLeft(box.rect);
+                    current -= Tetrimino.Box.size;
+                    box.rect.SetValue(Canvas.LeftProperty, current);
                 }
             }
-            else if(e.Key == Key.P)
+            else if (e.Key == Key.R)
             {
-                if(timer.IsEnabled)
+                falling_tetrimino.rotate();
+            }
+            else if (e.Key == Key.P)
+            {
+                if (timer.IsEnabled)
                 {
                     timer.IsEnabled = false;
                     label_pause.Visibility = Visibility.Visible;

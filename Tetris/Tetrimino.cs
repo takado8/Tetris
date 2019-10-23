@@ -15,13 +15,13 @@ namespace Tetris
         public char shape;
         public List<Box> boxes;
         static int id = 0;
-        public int tag;
+        public int position = 0;
         static Random r = new Random();
 
         public Tetrimino()
         {
             // random shape
-            shape = shapes[r.Next(7)];
+            shape = 'I';//shapes[r.Next(7)];
             build_tetrimino();
         }
 
@@ -82,7 +82,7 @@ namespace Tetris
                 {
                     box = new Box(color, tetr_tag, Box.size, 3 * Box.size + (i * Box.size));
                     boxes.Add(box);
-                }          
+                }
             }
             else if (shape == 'S')
             {
@@ -110,6 +110,86 @@ namespace Tetris
                 {
                     box = new Box(color, tetr_tag, Box.size, 4 * Box.size + (i * Box.size));
                     boxes.Add(box);
+                }
+            }
+        }
+
+        public void rotate()
+        {
+            if (shape == 'I')
+            {
+                double top = Canvas.GetTop(boxes[1].rect);
+                double left = Canvas.GetLeft(boxes[1].rect);
+                if (position == 0)
+                {
+                    boxes[0].rect.SetValue(Canvas.TopProperty, top - Box.size);
+                    boxes[0].rect.SetValue(Canvas.LeftProperty, left);
+                    for (int i = 2; i < 4; i++)
+                    {
+                        boxes[i].rect.SetValue(Canvas.TopProperty, top + (i - 1) * Box.size);
+                        boxes[i].rect.SetValue(Canvas.LeftProperty, left);
+                    }
+                    position = 1;
+                }
+                else
+                {
+                    boxes[0].rect.SetValue(Canvas.LeftProperty, left - Box.size);
+                    boxes[0].rect.SetValue(Canvas.TopProperty, top);
+                    for (int i = 2; i < 4; i++)
+                    {
+                        boxes[i].rect.SetValue(Canvas.TopProperty, top);
+                        boxes[i].rect.SetValue(Canvas.LeftProperty, left + (i - 1) * Box.size);
+                    }
+                    position = 0;
+                }
+            }
+            else if (shape == 'T')
+            {
+                var top = Canvas.GetTop(boxes[1].rect);
+                var left = Canvas.GetLeft(boxes[1].rect);
+                if (position == 0)
+                {
+                    boxes[0].rect.SetValue(Canvas.TopProperty, top - Box.size);
+                    boxes[0].rect.SetValue(Canvas.LeftProperty, left);
+                    boxes[2].rect.SetValue(Canvas.TopProperty, top + Box.size);
+                    boxes[2].rect.SetValue(Canvas.LeftProperty, left);
+                    boxes[3].rect.SetValue(Canvas.TopProperty, top);
+                    boxes[3].rect.SetValue(Canvas.LeftProperty, left - Box.size);
+
+                    position = 1;
+                }
+                else if (position == 1)
+                {
+                    boxes[0].rect.SetValue(Canvas.TopProperty, top);
+                    boxes[0].rect.SetValue(Canvas.LeftProperty, left + Box.size);
+                    boxes[2].rect.SetValue(Canvas.TopProperty, top);
+                    boxes[2].rect.SetValue(Canvas.LeftProperty, left - Box.size);
+                    boxes[3].rect.SetValue(Canvas.TopProperty, top - Box.size);
+                    boxes[3].rect.SetValue(Canvas.LeftProperty, left);
+
+                    position = 2;
+                }
+                else if (position == 2)
+                {
+                    boxes[0].rect.SetValue(Canvas.TopProperty, top + Box.size);
+                    boxes[0].rect.SetValue(Canvas.LeftProperty, left);
+                    boxes[2].rect.SetValue(Canvas.TopProperty, top - Box.size);
+                    boxes[2].rect.SetValue(Canvas.LeftProperty, left);
+                    boxes[3].rect.SetValue(Canvas.TopProperty, top);
+                    boxes[3].rect.SetValue(Canvas.LeftProperty, left + Box.size);
+
+                    position = 3;
+                }
+                else if (position == 3)
+                {
+                    boxes[0].rect.SetValue(Canvas.TopProperty, top);
+                    boxes[0].rect.SetValue(Canvas.LeftProperty, left - Box.size);
+                    boxes[2].rect.SetValue(Canvas.TopProperty, top);
+                    boxes[2].rect.SetValue(Canvas.LeftProperty, left + Box.size);
+                    boxes[3].rect.SetValue(Canvas.TopProperty, top + Box.size);
+                    boxes[3].rect.SetValue(Canvas.LeftProperty, left);
+
+                    position = 0;
                 }
             }
         }
