@@ -11,7 +11,6 @@ namespace Tetris
 {
     class Tetrimino
     {
-        public Brush color = Brushes.ForestGreen;
         static char[] shapes = { 'I', 'T', 'O', 'L', 'J', 'S', 'Z' };
         public char shape;
         public List<Box> boxes;
@@ -22,7 +21,7 @@ namespace Tetris
         public Tetrimino()
         {
             // random shape
-            shape = 'O';//shapes[r.Next(7)];
+            shape = shapes[r.Next(7)];
             build_tetrimino();
         }
 
@@ -31,8 +30,10 @@ namespace Tetris
             boxes = new List<Box>();
             int tetr_tag = id++;
             Box box;
+            Brush color;
             if (shape == 'I')
             {
+                color = Brushes.IndianRed;
                 for (int i = 0; i < 4; i++)
                 {
                     box = new Box(color, tetr_tag, 0, 3 * Box.size + (i * Box.size));
@@ -41,6 +42,7 @@ namespace Tetris
             }
             else if (shape == 'T')
             {
+                color = Brushes.SlateGray;
                 for (int i = 0; i < 3; i++)
                 {
                     box = new Box(color, tetr_tag, 0, 3 * Box.size + (i * Box.size));
@@ -51,6 +53,7 @@ namespace Tetris
             }
             else if (shape == 'O')
             {
+                color = Brushes.MediumTurquoise;
                 for (int i = 0; i < 2; i++)
                 {
                     box = new Box(color, tetr_tag, 0, 3 * Box.size + (i * Box.size));
@@ -61,6 +64,7 @@ namespace Tetris
             }
             else if (shape == 'L')
             {
+                color = Brushes.DarkGoldenrod;
                 for (int i = 0; i < 3; i++)
                 {
                     box = new Box(color, tetr_tag, 0, 3 * Box.size + (i * Box.size));
@@ -70,7 +74,8 @@ namespace Tetris
                 boxes.Add(box);
             }
             else if (shape == 'J')
-            {         
+            {
+                color = Brushes.MediumPurple;
                 box = new Box(color, tetr_tag, 0, 3 * Box.size);
                 boxes.Add(box);
                 for (int i = 0; i < 3; i++)
@@ -81,6 +86,7 @@ namespace Tetris
             }
             else if (shape == 'S')
             {
+                color = Brushes.CornflowerBlue;
                 for (int i = 0; i < 2; i++)
                 {
                     box = new Box(color, tetr_tag, 0, 4 * Box.size + (i * Box.size));
@@ -94,6 +100,7 @@ namespace Tetris
             }
             else if (shape == 'Z')
             {
+                color = Brushes.ForestGreen;
                 for (int i = 0; i < 2; i++)
                 {
                     box = new Box(color, tetr_tag, 0, 3 * Box.size + (i * Box.size));

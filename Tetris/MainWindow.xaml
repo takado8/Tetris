@@ -12,6 +12,7 @@
         Title="MainWindow" Height="612.265" Width="491.259">
     <Grid Margin="0,0,0,0">
         <Canvas x:Name="canvas" HorizontalAlignment="Left" Background="#4e4e50" Height="520" Margin="24,34,0,0" VerticalAlignment="Top" Width="260"/>
+        <Label x:Name="label_pause" Visibility="Hidden" Content="PAUSE" FontFamily="Trebuchet MS" FontSize="33" Foreground="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="104,102,0,0" Height="47" Width="100"/>
 
     </Grid>
 </Window>

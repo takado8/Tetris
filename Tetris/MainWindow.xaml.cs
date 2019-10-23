@@ -24,6 +24,8 @@ namespace Tetris
         DispatcherTimer timer = new DispatcherTimer();
         Dictionary<double, List<Tetrimino.Box>> static_boxes = new Dictionary<double, List<Tetrimino.Box>>();
         Tetrimino falling_tetrimino;
+        int normal_speed = 300;
+        int fast_speed = 40;
 
         public MainWindow()
         {
@@ -34,7 +36,7 @@ namespace Tetris
         {
             init_dict();
             new_tetrimino();
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
+            timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
             timer.Tick += Timer_Tick;
             timer.IsEnabled = true;
         }
@@ -101,6 +103,7 @@ namespace Tetris
                 static_boxes.Clear();
                 init_dict();
             }
+            timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
             new_tetrimino();
         }
 
@@ -146,35 +149,27 @@ namespace Tetris
             {
                 if (box_list.Value.Count == 10)
                 {         
-                    var threshold = box_list.Key;
                     foreach (var box in box_list.Value)
                     {
                         canvas.Children.Remove(box.rect);
                     }
                     box_list.Value.Clear();
 
-                    double range = threshold - Tetrimino.Box.size;
-                    Console.WriteLine("range: " + range);
+                    double range = box_list.Key - Tetrimino.Box.size;
                     for (double i = range; i > 0; i -= Tetrimino.Box.size)
                     {
-                        Console.WriteLine("i: " + i);
                         foreach (var box in static_boxes[i])
                         {
-                            Console.WriteLine("old top: " + i);
                             box.rect.SetValue(Canvas.TopProperty, i + Tetrimino.Box.size);
-                            Console.WriteLine("new top: " + (i + Tetrimino.Box.size));
                         }
-
-                        static_boxes[(double)(i + Tetrimino.Box.size)].Clear();
-                        foreach(var b in static_boxes[(double)i])
+                        static_boxes[(i + Tetrimino.Box.size)].Clear();
+                        foreach (var b in static_boxes[(double)i])
                         {
                             static_boxes[(double)(i + Tetrimino.Box.size)].Add(b);
                         }
                     }
-                    
                 }
             }
-
         }
         bool check_loose()
         {
@@ -195,7 +190,7 @@ namespace Tetris
             if (speed_key) return;
             if (e.Key == Key.Down) // speed
             {
-                timer.Interval = new TimeSpan(0, 0, 0, 0, 60);
+                timer.Interval = new TimeSpan(0, 0, 0, 0, fast_speed);
                 speed_key = true;
             }
             else if (e.Key == Key.Right)
@@ -247,6 +242,19 @@ namespace Tetris
                         current -= Tetrimino.Box.size;
                         box.rect.SetValue(Canvas.LeftProperty, current);
                     }
+                }
+            }
+            else if(e.Key == Key.P)
+            {
+                if(timer.IsEnabled)
+                {
+                    timer.IsEnabled = false;
+                    label_pause.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    timer.IsEnabled = true;
+                    label_pause.Visibility = Visibility.Hidden;
                 }
             }
         }
