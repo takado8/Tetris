@@ -125,88 +125,7 @@ namespace Tetris
             }
         }
 
-        public void rotate()
-        {
-            if (shape == 'I')
-            {
-                double top = Canvas.GetTop(boxes[1].rect);
-                double left = Canvas.GetLeft(boxes[1].rect);
-                if (position == 0)
-                {
-                    boxes[0].rect.SetValue(Canvas.TopProperty, top - Box.size);
-                    boxes[0].rect.SetValue(Canvas.LeftProperty, left);
-                    for (int i = 2; i < 4; i++)
-                    {
-                        boxes[i].rect.SetValue(Canvas.TopProperty, top + (i - 1) * Box.size);
-                        boxes[i].rect.SetValue(Canvas.LeftProperty, left);
-                    }
-                    position = 1;
-                }
-                else
-                {
-                    boxes[0].rect.SetValue(Canvas.LeftProperty, left - Box.size);
-                    boxes[0].rect.SetValue(Canvas.TopProperty, top);
-                    for (int i = 2; i < 4; i++)
-                    {
-                        boxes[i].rect.SetValue(Canvas.TopProperty, top);
-                        boxes[i].rect.SetValue(Canvas.LeftProperty, left + (i - 1) * Box.size);
-                    }
-                    position = 0;
-                }
-            }
-            else if (shape == 'T')
-            {
-                var top = Canvas.GetTop(boxes[1].rect);
-                var left = Canvas.GetLeft(boxes[1].rect);
-                if (position == 0)
-                {
-                    // check ground
-
-                    
-                   // boxes[0].rect.SetValue(Canvas.TopProperty, top - Box.size);
-                   // boxes[0].rect.SetValue(Canvas.LeftProperty, left);
-                    boxes[2].rect.SetValue(Canvas.TopProperty, top - Box.size);
-                    boxes[2].rect.SetValue(Canvas.LeftProperty, left);
-                   // boxes[3].rect.SetValue(Canvas.TopProperty, top);
-                    //boxes[3].rect.SetValue(Canvas.LeftProperty, left - Box.size);
-
-                    position = 1;
-                }
-                else if (position == 1)
-                {
-                    //boxes[0].rect.SetValue(Canvas.TopProperty, top);
-                    //boxes[0].rect.SetValue(Canvas.LeftProperty, left + Box.size);
-                    //boxes[2].rect.SetValue(Canvas.TopProperty, top);
-                    //boxes[2].rect.SetValue(Canvas.LeftProperty, left - Box.size);
-                    boxes[3].rect.SetValue(Canvas.TopProperty, top);
-                    boxes[3].rect.SetValue(Canvas.LeftProperty, left + Box.size);
-
-                    position = 2;
-                }
-                else if (position == 2)
-                {
-                    boxes[0].rect.SetValue(Canvas.TopProperty, top + Box.size);
-                    boxes[0].rect.SetValue(Canvas.LeftProperty, left);
-                   // boxes[2].rect.SetValue(Canvas.TopProperty, top - Box.size);
-                   // boxes[2].rect.SetValue(Canvas.LeftProperty, left);
-                   // boxes[3].rect.SetValue(Canvas.TopProperty, top);
-                   // boxes[3].rect.SetValue(Canvas.LeftProperty, left + Box.size);
-
-                    position = 3;
-                }
-                else if (position == 3)
-                {
-                    boxes[0].rect.SetValue(Canvas.TopProperty, top);
-                    boxes[0].rect.SetValue(Canvas.LeftProperty, left - Box.size);
-                    boxes[2].rect.SetValue(Canvas.TopProperty, top);
-                    boxes[2].rect.SetValue(Canvas.LeftProperty, left + Box.size);
-                    boxes[3].rect.SetValue(Canvas.TopProperty, top + Box.size);
-                    boxes[3].rect.SetValue(Canvas.LeftProperty, left);
-
-                    position = 0;
-                }
-            }
-        }
+        
 
         public class Box
         {
@@ -227,7 +146,5 @@ namespace Tetris
                 rect.SetValue(Canvas.LeftProperty, left);
             }
         }
-
-
     }
 }

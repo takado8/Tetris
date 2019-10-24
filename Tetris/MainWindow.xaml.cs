@@ -103,7 +103,8 @@ namespace Tetris
             new_tetrimino();
         }
 
-        bool obstacle_in_way(Tetrimino.Box box, int dir)
+        /// <param name="dir">0 down, 1 left, 2 right, 3 up</param>
+        bool obstacle_in_way(Tetrimino.Box box, int dir, int range = 1)
         {
             var top = Canvas.GetTop(box.rect);
             var left = Canvas.GetLeft(box.rect);
@@ -112,7 +113,7 @@ namespace Tetris
             if (dir == 0) //down
             {
                 delta_left = 0.00001;
-                delta_top = Tetrimino.Box.size + 0.00001;
+                delta_top = range * Tetrimino.Box.size + 0.00001;
             }
             else if (dir == 1) //left
             {
@@ -123,6 +124,11 @@ namespace Tetris
             {
                 delta_top = 0.00001;
                 delta_left = Tetrimino.Box.size + 0.00001;
+            }
+            else if (dir == 3) //up
+            {
+                delta_top = -(Tetrimino.Box.size + 0.00001);
+                delta_left = 0.00001;
             }
             var point = new Point(left + delta_left, top + delta_top);
             var hit = canvas.InputHitTest(point);
@@ -218,7 +224,7 @@ namespace Tetris
             }
             else if (e.Key == Key.Up)
             {
-                falling_tetrimino.rotate();
+                rotate();
             }
             else if (e.Key == Key.P)
             {
@@ -241,6 +247,91 @@ namespace Tetris
             {
                 timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
                 speed_key = false;
+            }
+        }
+        public void rotate()
+        {
+            if (falling_tetrimino.shape == 'I')
+            {
+                double top = Canvas.GetTop(falling_tetrimino.boxes[1].rect);
+                double left = Canvas.GetLeft(falling_tetrimino.boxes[1].rect);
+                var box = falling_tetrimino.boxes[1];
+                if (falling_tetrimino.position == 0)
+                {
+                    if (!obstacle_in_way(box, 0) && !obstacle_in_way(box, 0, 2)
+                            && !obstacle_in_way(box, 3))
+                    {
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.TopProperty, top - Tetrimino.Box.size);
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.LeftProperty, left);
+                        for (int i = 2; i < 4; i++)
+                        {
+                            falling_tetrimino.boxes[i].rect.SetValue(Canvas.TopProperty, top + (i - 1) * Tetrimino.Box.size);
+                            falling_tetrimino.boxes[i].rect.SetValue(Canvas.LeftProperty, left);
+                        }
+                        falling_tetrimino.position = 1;
+                    }
+                }
+                else
+                {
+                    if (!obstacle_in_way(box,1) && !obstacle_in_way(box,2)
+                            && !obstacle_in_way(box, 2,2))
+                    {
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.LeftProperty, left - Tetrimino.Box.size);
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.TopProperty, top);
+                        for (int i = 2; i < 4; i++)
+                        {
+                            falling_tetrimino.boxes[i].rect.SetValue(Canvas.TopProperty, top);
+                            falling_tetrimino.boxes[i].rect.SetValue(Canvas.LeftProperty, left + (i - 1) * Tetrimino.Box.size);
+                        }
+                        falling_tetrimino.position = 0;
+                    }
+                }
+            }
+            else if (falling_tetrimino.shape == 'T')
+            {
+                var top = Canvas.GetTop(falling_tetrimino.boxes[1].rect);
+                var left = Canvas.GetLeft(falling_tetrimino.boxes[1].rect);
+                var box = falling_tetrimino.boxes[1];
+                if (falling_tetrimino.position == 0)
+                {
+                    if (!obstacle_in_way(box, 3))
+                    {
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.TopProperty, top - Tetrimino.Box.size);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.LeftProperty, left);
+                        falling_tetrimino.position = 1;
+                    }
+                }
+                else if (falling_tetrimino.position == 1)
+                {
+                    if (!obstacle_in_way(box, 2))
+                    {
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.TopProperty, top);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.LeftProperty, left + Tetrimino.Box.size);
+                        falling_tetrimino.position = 2;
+                    }
+                }
+                else if (falling_tetrimino.position == 2)
+                {
+                    if (!obstacle_in_way(box, 0))
+                    {
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.TopProperty, top + Tetrimino.Box.size);
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.LeftProperty, left);
+                        falling_tetrimino.position = 3;
+                    }
+                }
+                else if (falling_tetrimino.position == 3)
+                {
+                    if (!obstacle_in_way(box, 1))
+                    {
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.TopProperty, top);
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.LeftProperty, left - Tetrimino.Box.size);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.TopProperty, top);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.LeftProperty, left + Tetrimino.Box.size);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.TopProperty, top + Tetrimino.Box.size);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.LeftProperty, left);
+                        falling_tetrimino.position = 0;
+                    }
+                }
             }
         }
     }
