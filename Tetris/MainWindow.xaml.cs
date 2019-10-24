@@ -273,8 +273,8 @@ namespace Tetris
                 }
                 else
                 {
-                    if (!obstacle_in_way(box,1) && !obstacle_in_way(box,2)
-                            && !obstacle_in_way(box, 2,2))
+                    if (!obstacle_in_way(box, 1) && !obstacle_in_way(box, 2)
+                            && !obstacle_in_way(box, 2, 2))
                     {
                         falling_tetrimino.boxes[0].rect.SetValue(Canvas.LeftProperty, left - Tetrimino.Box.size);
                         falling_tetrimino.boxes[0].rect.SetValue(Canvas.TopProperty, top);
@@ -329,6 +329,69 @@ namespace Tetris
                         falling_tetrimino.boxes[2].rect.SetValue(Canvas.LeftProperty, left + Tetrimino.Box.size);
                         falling_tetrimino.boxes[3].rect.SetValue(Canvas.TopProperty, top + Tetrimino.Box.size);
                         falling_tetrimino.boxes[3].rect.SetValue(Canvas.LeftProperty, left);
+                        falling_tetrimino.position = 0;
+                    }
+                }
+            }
+            else if (falling_tetrimino.shape == 'L')
+            {
+                var top = Canvas.GetTop(falling_tetrimino.boxes[1].rect);
+                var left = Canvas.GetLeft(falling_tetrimino.boxes[1].rect);
+                var box0 = falling_tetrimino.boxes[0];
+                var box1 = falling_tetrimino.boxes[1];
+                if (falling_tetrimino.position == 0)
+                {
+                    if (!obstacle_in_way(box0, 3) && !obstacle_in_way(box1, 3)
+                        && !obstacle_in_way(box1, 0))
+                    {
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.TopProperty, top - Tetrimino.Box.size);
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.LeftProperty, left);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.TopProperty, top + Tetrimino.Box.size);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.LeftProperty, left);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.TopProperty, top - Tetrimino.Box.size);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.LeftProperty, left - Tetrimino.Box.size);
+                        falling_tetrimino.position = 1;
+                    }
+                }
+                else if (falling_tetrimino.position == 1)
+                {
+                    if (!obstacle_in_way(box0,2) && !obstacle_in_way(box1, 2)
+                        && !obstacle_in_way(box1,1))
+                    {
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.TopProperty, top);
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.LeftProperty, left + Tetrimino.Box.size);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.TopProperty, top);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.LeftProperty, left - Tetrimino.Box.size);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.TopProperty, top - Tetrimino.Box.size);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.LeftProperty, left + Tetrimino.Box.size);
+                        falling_tetrimino.position = 2;
+                    }
+                }
+                else if (falling_tetrimino.position == 2)
+                {
+                    if (!obstacle_in_way(box0,0) && !obstacle_in_way(box1, 0)
+                        && !obstacle_in_way(box1, 3))
+                    {
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.TopProperty, top + Tetrimino.Box.size);
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.LeftProperty, left);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.TopProperty, top - Tetrimino.Box.size);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.LeftProperty, left);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.TopProperty, top + Tetrimino.Box.size);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.LeftProperty, left + Tetrimino.Box.size);
+                        falling_tetrimino.position = 3;
+                    }
+                }
+                else if (falling_tetrimino.position == 3)
+                {
+                    if (!obstacle_in_way(box0, 1) && !obstacle_in_way(box1, 1)
+                        && !obstacle_in_way(box1, 2))
+                    {
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.TopProperty, top);
+                        falling_tetrimino.boxes[0].rect.SetValue(Canvas.LeftProperty, left - Tetrimino.Box.size);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.TopProperty, top);
+                        falling_tetrimino.boxes[2].rect.SetValue(Canvas.LeftProperty, left + Tetrimino.Box.size);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.TopProperty, top + Tetrimino.Box.size);
+                        falling_tetrimino.boxes[3].rect.SetValue(Canvas.LeftProperty, left - Tetrimino.Box.size);
                         falling_tetrimino.position = 0;
                     }
                 }
