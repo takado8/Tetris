@@ -129,9 +129,8 @@ namespace Tetris
             try
             {
                 var ee = (Rectangle)hit;
-                if ((int)ee.Tag != (int)box.rect.Tag)// && Canvas.GetTop(ee) - 26 == top)
+                if ((int)ee.Tag != (int)box.rect.Tag)
                 {
-                    //MessageBox.Show(hit.ToString() + "  tag1: " + ee.Tag + "  tag2: " + box.rect.Tag);
                     return true;
                 }
             }
@@ -217,7 +216,7 @@ namespace Tetris
                     box.rect.SetValue(Canvas.LeftProperty, current);
                 }
             }
-            else if (e.Key == Key.R)
+            else if (e.Key == Key.Up)
             {
                 falling_tetrimino.rotate();
             }
