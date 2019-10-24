@@ -160,23 +160,26 @@ namespace Tetris
                 var left = Canvas.GetLeft(boxes[1].rect);
                 if (position == 0)
                 {
-                    boxes[0].rect.SetValue(Canvas.TopProperty, top - Box.size);
-                    boxes[0].rect.SetValue(Canvas.LeftProperty, left);
-                    boxes[2].rect.SetValue(Canvas.TopProperty, top + Box.size);
+                    // check ground
+
+                    
+                   // boxes[0].rect.SetValue(Canvas.TopProperty, top - Box.size);
+                   // boxes[0].rect.SetValue(Canvas.LeftProperty, left);
+                    boxes[2].rect.SetValue(Canvas.TopProperty, top - Box.size);
                     boxes[2].rect.SetValue(Canvas.LeftProperty, left);
-                    boxes[3].rect.SetValue(Canvas.TopProperty, top);
-                    boxes[3].rect.SetValue(Canvas.LeftProperty, left - Box.size);
+                   // boxes[3].rect.SetValue(Canvas.TopProperty, top);
+                    //boxes[3].rect.SetValue(Canvas.LeftProperty, left - Box.size);
 
                     position = 1;
                 }
                 else if (position == 1)
                 {
-                    boxes[0].rect.SetValue(Canvas.TopProperty, top);
-                    boxes[0].rect.SetValue(Canvas.LeftProperty, left + Box.size);
-                    boxes[2].rect.SetValue(Canvas.TopProperty, top);
-                    boxes[2].rect.SetValue(Canvas.LeftProperty, left - Box.size);
-                    boxes[3].rect.SetValue(Canvas.TopProperty, top - Box.size);
-                    boxes[3].rect.SetValue(Canvas.LeftProperty, left);
+                    //boxes[0].rect.SetValue(Canvas.TopProperty, top);
+                    //boxes[0].rect.SetValue(Canvas.LeftProperty, left + Box.size);
+                    //boxes[2].rect.SetValue(Canvas.TopProperty, top);
+                    //boxes[2].rect.SetValue(Canvas.LeftProperty, left - Box.size);
+                    boxes[3].rect.SetValue(Canvas.TopProperty, top);
+                    boxes[3].rect.SetValue(Canvas.LeftProperty, left + Box.size);
 
                     position = 2;
                 }
@@ -184,10 +187,10 @@ namespace Tetris
                 {
                     boxes[0].rect.SetValue(Canvas.TopProperty, top + Box.size);
                     boxes[0].rect.SetValue(Canvas.LeftProperty, left);
-                    boxes[2].rect.SetValue(Canvas.TopProperty, top - Box.size);
-                    boxes[2].rect.SetValue(Canvas.LeftProperty, left);
-                    boxes[3].rect.SetValue(Canvas.TopProperty, top);
-                    boxes[3].rect.SetValue(Canvas.LeftProperty, left + Box.size);
+                   // boxes[2].rect.SetValue(Canvas.TopProperty, top - Box.size);
+                   // boxes[2].rect.SetValue(Canvas.LeftProperty, left);
+                   // boxes[3].rect.SetValue(Canvas.TopProperty, top);
+                   // boxes[3].rect.SetValue(Canvas.LeftProperty, left + Box.size);
 
                     position = 3;
                 }
