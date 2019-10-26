@@ -9,10 +9,14 @@
         Background="#222222"
         KeyDown="Window_KeyDown"
         KeyUp="Window_KeyUp"
-        Title="MainWindow" Height="612.265" Width="491.259">
+        Title="MainWindow" Height="638" Width="470">
     <Grid Margin="0,0,0,0">
-        <Canvas x:Name="canvas" HorizontalAlignment="Left" Background="#4e4e50" Height="520" Margin="24,34,0,0" VerticalAlignment="Top" Width="260"/>
+        <Border BorderBrush="#4e4e50" BorderThickness="0" Background='#4e4e50' HorizontalAlignment="Left" Height="28" Margin="27,31,0,0" VerticalAlignment="Top" Width="260"/>
+
+        <Canvas x:Name="canvas" HorizontalAlignment="Left" Background="#4e4e50" Height="520" Margin="27,57,0,0" VerticalAlignment="Top" Width="260"/>
         <Label x:Name="label_pause" Visibility="Hidden" Content="PAUSE" FontFamily="Trebuchet MS" FontSize="33" Foreground="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="104,102,0,0" Height="47" Width="100"/>
+        <Label x:Name="label_top" Content="Top: " FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,80,0,0" Height="47" Width="157"/>
+        <Label x:Name="label_score" Content="Score: " FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,33,0,0" Height="47" Width="156"/>
 
     </Grid>
 </Window>
