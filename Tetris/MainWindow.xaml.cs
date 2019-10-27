@@ -24,10 +24,12 @@ namespace Tetris
         DispatcherTimer timer = new DispatcherTimer();
         Dictionary<double, List<Tetrimino.Box>> static_boxes = new Dictionary<double, List<Tetrimino.Box>>();
         Tetrimino falling_tetrimino;
-        int normal_speed = 300;
-        int fast_speed = 40;
+        int normal_speed = 750;
+        int fast_speed = 30;
+        int drop_speed = 3;
         int score = 0;
         int top_score = 0;
+        bool drop_on = false;
 
         public MainWindow()
         {
@@ -89,6 +91,12 @@ namespace Tetris
 
         void drop()
         {
+            if(drop_on)
+            {
+                timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
+                drop_on = false;
+
+            }
             foreach (var box in falling_tetrimino.boxes)
             {
                 static_boxes[Canvas.GetTop(box.rect)].Add(box);
@@ -211,6 +219,11 @@ namespace Tetris
             {
                 timer.Interval = new TimeSpan(0, 0, 0, 0, fast_speed);
                 speed_key = true;
+            }
+            else if(e.Key == Key.Space)
+            {
+                timer.Interval = new TimeSpan(0, 0, 0, 0, drop_speed);
+                drop_on = true;
             }
             else if (e.Key == Key.Right)
             {
