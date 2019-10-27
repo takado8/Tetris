@@ -129,7 +129,6 @@ namespace Tetris
             public const int size = 26;
             public Brush color = Brushes.ForestGreen;
             public Rectangle rect;
-            public int id;
             public Box(Brush color, int _id, double top = 0.0, double left = 78.0)
             {
                 rect = new Rectangle();

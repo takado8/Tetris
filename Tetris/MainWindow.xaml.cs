@@ -86,16 +86,24 @@ namespace Tetris
             move_down();
         }
 
-        double count_aggregate_height()
+
+
+        double[] count_aggregate_height_and_holes()
         {
             double sum = 0;
             double min = canvas.Height;
+            double holes = 0;
+            double[] result = new double[2];
             Dictionary<double, List<Tetrimino.Box>> dict = new Dictionary<double, List<Tetrimino.Box>>();
+
             for (double i = 0; i < canvas.Width; i += Tetrimino.Box.size)
             {
                 dict.Add(i, new List<Tetrimino.Box>());
             }
-
+            foreach (var box in falling_tetrimino.boxes)
+            {
+                dict[Canvas.GetLeft(box.rect)].Add(box);
+            }
             foreach (var list in static_boxes)
             {
                 foreach (var box in list.Value)
@@ -103,9 +111,9 @@ namespace Tetris
                     dict[Canvas.GetLeft(box.rect)].Add(box);
                 }
             }
-            foreach (var y in dict)
+            foreach (var column in dict)
             {
-                foreach (var box in y.Value)
+                foreach (var box in column.Value)
                 {
                     var top = Canvas.GetTop(box.rect);
                     if (top < min)
@@ -113,11 +121,41 @@ namespace Tetris
                         min = top;
                     }
                 }
-                min = (520 - min)/Tetrimino.Box.size;
+                min = (520 - min) / Tetrimino.Box.size;
+                holes += min - column.Value.Count;
                 sum += min;
                 min = canvas.Height;
             }
-            return sum;
+            result[0] = sum;
+            result[1] = holes;
+            return result;
+        }
+
+        double complete_lines()
+        {
+            double lines = 0;
+            Dictionary<double, List<Tetrimino.Box>> dict =
+                new Dictionary<double, List<Tetrimino.Box>>();
+            foreach(var v in static_boxes)
+            {
+                dict.Add(v.Key, new List<Tetrimino.Box>());
+                foreach(var box in v.Value)
+                {
+                    dict[v.Key].Add(box);
+                }
+            }
+            foreach(var box in falling_tetrimino.boxes)
+            {
+                dict[Canvas.GetTop(box.rect)].Add(box);
+            }
+            foreach (var box_list in dict)
+            {
+                if (box_list.Value.Count == 10)
+                {
+                    lines++;
+                }
+            }
+            return lines;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -155,8 +193,10 @@ namespace Tetris
         {
             if (check_drop())
             {
+                var res = count_aggregate_height_and_holes();
+                Console.WriteLine("agr.h: " + res[0] +
+                    " holes: " + res[1]);
                 drop();
-                Console.WriteLine(count_aggregate_height());
                 return;
             }
             //move
@@ -272,7 +312,7 @@ namespace Tetris
 
         bool check_loose()
         {
-              if (static_boxes[0].Count > 0) return true;
+            if (static_boxes[0].Count > 0) return true;
             else return false;
         }
 
@@ -388,7 +428,7 @@ namespace Tetris
             }
             else if (e.Key == Key.H)
             {
-                count_aggregate_height();
+                
             }
         }
 
