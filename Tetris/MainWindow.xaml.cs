@@ -24,7 +24,7 @@ namespace Tetris
         DispatcherTimer timer = new DispatcherTimer();
         Dictionary<double, List<Tetrimino.Box>> static_boxes = new Dictionary<double, List<Tetrimino.Box>>();
         Tetrimino falling_tetrimino;
-        int normal_speed = 750;
+        int normal_speed = 3;
         int fast_speed = 30;
         int drop_speed = 3;
         int score = 0;
@@ -46,6 +46,8 @@ namespace Tetris
         {
             List<double> zero_state = new List<double>();
             List<double> moves_evaluation = new List<double>();
+            Dictionary<int, List<double>> dict = new Dictionary<int, List<double>>();
+            int states = 0;
             foreach (var box in falling_tetrimino.boxes)
             {
                 var top = Canvas.GetTop(box.rect);
@@ -53,7 +55,6 @@ namespace Tetris
                 zero_state.Add(top);
                 zero_state.Add(left);
             }
-            int states = 0;
             switch (falling_tetrimino.shape)
             {
                 case 'S':
@@ -61,6 +62,10 @@ namespace Tetris
                 case 'I': states = 2; break;
                 case 'O': states = 1; break;
                 default: states = 4; break;
+            }
+            for (int i = 0; i < states; i++)
+            {
+                dict.Add(i, new List<double>());
             }
             for (int i = 0; i < states; i++)
             {
@@ -73,12 +78,10 @@ namespace Tetris
                     }
                     // check state
                     var evaluation = evaluate_move();
-                    moves_evaluation.Add(evaluation);
-                    //Console.WriteLine((moves_evaluation.Count - 1) + ": " + evaluation);
+                    dict[i].Add(evaluation);
                     //MessageBox.Show("");
                     // return to 0 state
                     while (move_up()) ;
-
                 } while (move_right());
                 //move_down();
                 //move_down();
@@ -92,6 +95,46 @@ namespace Tetris
                 falling_tetrimino.boxes[i / 2].rect.SetValue(Canvas.LeftProperty, zero_state[i + 1]);
             }
             move_down();
+
+            double global_max = double.MinValue;
+            int global_max_index = 0;
+            List<double> local_max = new List<double>();
+            List<int> local_max_index = new List<int>();
+            foreach (var list in dict)
+            {
+                double loc_max = double.MinValue;
+                int loc_max_index = -1;
+                for(int i=0; i<list.Value.Count; i++)
+                {
+                    if (list.Value[i] > loc_max)
+                    {
+                        loc_max = list.Value[i];
+                        loc_max_index = i;
+                    }
+                }
+                local_max.Add(loc_max);
+                local_max_index.Add(loc_max_index);
+            }
+            for (int i = 0; i < local_max.Count; i++)
+            {
+                if(local_max[i] > global_max)
+                {
+                    global_max = local_max[i];
+                    global_max_index = i;
+                }
+            }
+            
+            do
+            {
+                rotate();
+            } while (falling_tetrimino.position != global_max_index);
+            while (move_left());
+
+            for (int i = 0; i < local_max_index[global_max_index]; i++)
+            {
+                move_right();
+            }
+           
         }
 
         double evaluate_move()
@@ -103,7 +146,7 @@ namespace Tetris
             var bumpiness = hhb[2];
 
             return a * height + b * lines + c * holes + d * bumpiness;
-        } 
+        }
 
         double[] height_holes_bumpiness()
         {
@@ -214,19 +257,22 @@ namespace Tetris
             return false;
         }
 
-
+        bool flag = false;
         private void Timer_Tick(object sender, EventArgs e)
         {
-            //if (check_drop())
-            //{
-            //    var res = height_holes_bumpiness();
-            //    Console.WriteLine("agr.h: " + res[0] +
-            //        " holes: " + res[1]+ " bumpiness: "+res[2]);
-            //    drop();
-            //    return;
-            //}
-            ////move
-            //move_down();
+            if(!flag)
+            {
+                simulate();
+                flag = true;
+            }
+            if (check_drop())
+            {
+                drop();
+                simulate();
+                return;
+            }
+            //move
+            move_down();
         }
 
         void drop()
