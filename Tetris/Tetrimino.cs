@@ -30,7 +30,7 @@ namespace Tetris
             }
             // random shape
             int index = r.Next(available_shapes.Count);
-            shape = available_shapes[index];
+            shape = 'J';//available_shapes[index];
             available_shapes.RemoveAt(index);
             build_tetrimino();
         }
