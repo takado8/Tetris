@@ -88,12 +88,13 @@ namespace Tetris
 
 
 
-        double[] count_aggregate_height_and_holes()
+        double[] height_holes_bumpiness()
         {
+            List<double> columns_height = new List<double>();
             double sum = 0;
             double min = canvas.Height;
             double holes = 0;
-            double[] result = new double[2];
+            double[] result = new double[3];
             Dictionary<double, List<Tetrimino.Box>> dict = new Dictionary<double, List<Tetrimino.Box>>();
 
             for (double i = 0; i < canvas.Width; i += Tetrimino.Box.size)
@@ -122,12 +123,20 @@ namespace Tetris
                     }
                 }
                 min = (520 - min) / Tetrimino.Box.size;
+                columns_height.Add(min);
                 holes += min - column.Value.Count;
                 sum += min;
                 min = canvas.Height;
             }
+            double columns_dif = 0;
+            for (int i = 0; i < columns_height.Count - 1; i++)
+            {
+                columns_dif += Math.Abs(columns_height[i] - columns_height[i + 1]);
+            }
+
             result[0] = sum;
             result[1] = holes;
+            result[2] = columns_dif;
             return result;
         }
 
@@ -136,15 +145,15 @@ namespace Tetris
             double lines = 0;
             Dictionary<double, List<Tetrimino.Box>> dict =
                 new Dictionary<double, List<Tetrimino.Box>>();
-            foreach(var v in static_boxes)
+            foreach (var v in static_boxes)
             {
                 dict.Add(v.Key, new List<Tetrimino.Box>());
-                foreach(var box in v.Value)
+                foreach (var box in v.Value)
                 {
                     dict[v.Key].Add(box);
                 }
             }
-            foreach(var box in falling_tetrimino.boxes)
+            foreach (var box in falling_tetrimino.boxes)
             {
                 dict[Canvas.GetTop(box.rect)].Add(box);
             }
@@ -193,9 +202,9 @@ namespace Tetris
         {
             if (check_drop())
             {
-                var res = count_aggregate_height_and_holes();
+                var res = height_holes_bumpiness();
                 Console.WriteLine("agr.h: " + res[0] +
-                    " holes: " + res[1]);
+                    " holes: " + res[1]+ " bumpiness: "+res[2]);
                 drop();
                 return;
             }
@@ -428,7 +437,7 @@ namespace Tetris
             }
             else if (e.Key == Key.H)
             {
-                
+
             }
         }
 
