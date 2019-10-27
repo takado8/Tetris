@@ -29,11 +29,95 @@ namespace Tetris
         int drop_speed = 3;
         int score = 0;
         int top_score = 0;
-        bool drop_on = false;
+        bool speed_key = false;
+
 
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        void simulate()
+        {
+            List<double> zero_state = new List<double>();
+            foreach (var box in falling_tetrimino.boxes)
+            {
+                var top = Canvas.GetTop(box.rect);
+                var left = Canvas.GetLeft(box.rect);
+                zero_state.Add(top);
+                zero_state.Add(left);
+            }
+            int states = 0;
+            switch (falling_tetrimino.shape)
+            {
+                case 'S':
+                case 'Z':
+                case 'I': states = 2; break;
+                case 'O': states = 1; break;
+                default: states = 4; break;
+            }
+            for (int i = 0; i < states; i++)
+            {
+                while (move_left()) ;
+                do
+                {
+                    while (!check_drop())
+                    {
+                        move_down();
+                    }
+                    // check state
+                    MessageBox.Show("check_state");
+                    // return to 0 state
+                    while (move_up()) ;
+                    MessageBox.Show("up");
+
+                } while (move_right());
+                //move_down();
+                //move_down();
+                move_left();
+                rotate();
+            }
+            // return to zero_state
+            for (int i = 0; i < 8; i += 2)
+            {
+                falling_tetrimino.boxes[i / 2].rect.SetValue(Canvas.TopProperty, zero_state[i]);
+                falling_tetrimino.boxes[i / 2].rect.SetValue(Canvas.LeftProperty, zero_state[i + 1]);
+            }
+            move_down();
+        }
+
+        double count_aggregate_height()
+        {
+            double sum = 0;
+            double min = canvas.Height;
+            Dictionary<double, List<Tetrimino.Box>> dict = new Dictionary<double, List<Tetrimino.Box>>();
+            for (double i = 0; i < canvas.Width; i += Tetrimino.Box.size)
+            {
+                dict.Add(i, new List<Tetrimino.Box>());
+            }
+
+            foreach (var list in static_boxes)
+            {
+                foreach (var box in list.Value)
+                {
+                    dict[Canvas.GetLeft(box.rect)].Add(box);
+                }
+            }
+            foreach (var y in dict)
+            {
+                foreach (var box in y.Value)
+                {
+                    var top = Canvas.GetTop(box.rect);
+                    if (top < min)
+                    {
+                        min = top;
+                    }
+                }
+                min = (520 - min)/Tetrimino.Box.size;
+                sum += min;
+                min = canvas.Height;
+            }
+            return sum;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -52,51 +136,35 @@ namespace Tetris
                 static_boxes.Add(i * Tetrimino.Box.size, new List<Tetrimino.Box>());
             }
         }
-        int motion_step_set = 13;
-        int motion_step = 0;
 
-        private void Timer_Tick(object sender, EventArgs e)
+        bool check_drop()
         {
-            //if (motion_step++ == 0)
-            //{
-
             foreach (var box in falling_tetrimino.boxes)
             {
                 var top = Canvas.GetTop(box.rect);
-                var point = new Point(top + Tetrimino.Box.size,
-                       Canvas.GetLeft(box.rect));
-                if (obstacle_in_way(box, 0) || (top >= canvas.Height - Tetrimino.Box.size))
+                if (obstacle_in_way(box, 0))
                 {
-                    drop();
-                    return;
+                    return true;
                 }
             }
+            return false;
+        }
 
 
-
-            // }
-
-            //if (motion_step == motion_step_set)
-            //{
-            //    motion_step = 0;
-            //}
-
-            foreach (var box in falling_tetrimino.boxes)
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (check_drop())
             {
-                var current = Canvas.GetTop(box.rect);
-                current += Tetrimino.Box.size; // motion_step_set;
-                box.rect.SetValue(Canvas.TopProperty, current);
+                drop();
+                Console.WriteLine(count_aggregate_height());
+                return;
             }
+            //move
+            move_down();
         }
 
         void drop()
         {
-            if(drop_on)
-            {
-                timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
-                drop_on = false;
-
-            }
             foreach (var box in falling_tetrimino.boxes)
             {
                 static_boxes[Canvas.GetTop(box.rect)].Add(box);
@@ -116,6 +184,7 @@ namespace Tetris
                 static_boxes.Clear();
                 init_dict();
             }
+
             timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
             new_tetrimino();
         }
@@ -144,12 +213,13 @@ namespace Tetris
             }
             else if (dir == 3) //up
             {
-                delta_top = -(range * Tetrimino.Box.size + 0.00001);
+                delta_top = -((range - 1) * Tetrimino.Box.size + 0.00001);
                 delta_left = 0.00001;
             }
             var new_left = left + delta_left;
             var new_top = top + delta_top;
             if (new_top > canvas.Height ||
+                new_top < 0 ||
                 new_left > canvas.Width ||
                 new_left < 0)
             {
@@ -191,19 +261,21 @@ namespace Tetris
                             box.rect.SetValue(Canvas.TopProperty, i + Tetrimino.Box.size);
                         }
                         static_boxes[(i + Tetrimino.Box.size)].Clear();
-                        foreach (var b in static_boxes[(double)i])
+                        foreach (var b in static_boxes[i])
                         {
-                            static_boxes[(double)(i + Tetrimino.Box.size)].Add(b);
+                            static_boxes[(i + Tetrimino.Box.size)].Add(b);
                         }
                     }
                 }
             }
         }
+
         bool check_loose()
         {
-            if (static_boxes[0].Count > 0) return true;
+              if (static_boxes[0].Count > 0) return true;
             else return false;
         }
+
         void new_tetrimino()
         {
             falling_tetrimino = new Tetrimino();
@@ -212,47 +284,79 @@ namespace Tetris
                 canvas.Children.Add(box.rect);
             }
         }
-        bool speed_key = false;
+
+        void move_down()
+        {
+            foreach (var box in falling_tetrimino.boxes)
+            {
+                var current = Canvas.GetTop(box.rect);
+                current += Tetrimino.Box.size;
+                box.rect.SetValue(Canvas.TopProperty, current);
+            }
+        }
+        bool move_up()
+        {
+            foreach (var box in falling_tetrimino.boxes)
+            {
+                if (obstacle_in_way(box, 3, 3)) return false;
+            }
+            foreach (var box in falling_tetrimino.boxes)
+            {
+                var current = Canvas.GetTop(box.rect);
+                current -= Tetrimino.Box.size;
+                box.rect.SetValue(Canvas.TopProperty, current);
+            }
+            return true;
+        }
+        bool move_right()
+        {
+            foreach (var box in falling_tetrimino.boxes)
+            {
+                var left = Canvas.GetLeft(box.rect);
+                if (obstacle_in_way(box, 2)) return false;
+            }
+            foreach (var box in falling_tetrimino.boxes)
+            {
+                var current = Canvas.GetLeft(box.rect);
+                current += Tetrimino.Box.size;
+                box.rect.SetValue(Canvas.LeftProperty, current);
+            }
+            return true;
+        }
+        bool move_left()
+        {
+            foreach (var box in falling_tetrimino.boxes)
+            {
+                if (obstacle_in_way(box, 1)) return false;
+            }
+            foreach (var box in falling_tetrimino.boxes)
+            {
+                var current = Canvas.GetLeft(box.rect);
+                current -= Tetrimino.Box.size;
+                box.rect.SetValue(Canvas.LeftProperty, current);
+            }
+            return true;
+        }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (speed_key) return;
-            if (e.Key == Key.Down) // speed
+            if (e.Key == Key.Down)
             {
                 timer.Interval = new TimeSpan(0, 0, 0, 0, fast_speed);
                 speed_key = true;
             }
-            else if(e.Key == Key.Space)
+            else if (e.Key == Key.Space)
             {
                 timer.Interval = new TimeSpan(0, 0, 0, 0, drop_speed);
-                drop_on = true;
             }
             else if (e.Key == Key.Right)
             {
-                foreach (var box in falling_tetrimino.boxes)
-                {
-                    var left = Canvas.GetLeft(box.rect);
-                    if (obstacle_in_way(box, 2) ||
-                            left >= canvas.Width - Tetrimino.Box.size) return;
-                }
-                foreach (var box in falling_tetrimino.boxes)
-                {
-                    var current = Canvas.GetLeft(box.rect);
-                    current += Tetrimino.Box.size;
-                    box.rect.SetValue(Canvas.LeftProperty, current);
-                }
+                move_right();
             }
             else if (e.Key == Key.Left)
             {
-                foreach (var box in falling_tetrimino.boxes)
-                {
-                    if (obstacle_in_way(box, 1) || Canvas.GetLeft(box.rect) <= 0) return;
-                }
-                foreach (var box in falling_tetrimino.boxes)
-                {
-                    var current = Canvas.GetLeft(box.rect);
-                    current -= Tetrimino.Box.size;
-                    box.rect.SetValue(Canvas.LeftProperty, current);
-                }
+                move_left();
             }
             else if (e.Key == Key.Up)
             {
@@ -271,16 +375,32 @@ namespace Tetris
                     label_pause.Visibility = Visibility.Hidden;
                 }
             }
+            else if (e.Key == Key.S)
+            {
+                simulate();
+            }
+            else if (e.Key == Key.Escape)
+            {
+                canvas.Children.Clear();
+                static_boxes.Clear();
+                init_dict();
+                new_tetrimino();
+            }
+            else if (e.Key == Key.H)
+            {
+                count_aggregate_height();
+            }
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Down)
             {
-                timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
+                timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
                 speed_key = false;
             }
         }
+
         public void rotate()
         {
             if (falling_tetrimino.shape == 'I')

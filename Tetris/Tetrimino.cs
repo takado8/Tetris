@@ -19,7 +19,6 @@ namespace Tetris
         public int position = 0;
         static Random r = new Random();
 
-
         public Tetrimino()
         {
             if (available_shapes.Count == 0)
@@ -124,8 +123,6 @@ namespace Tetris
                 }
             }
         }
-
-        
 
         public class Box
         {
