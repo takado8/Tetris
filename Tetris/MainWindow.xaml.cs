@@ -111,6 +111,7 @@ namespace Tetris
                     label_top.Content = "Top: " + top_score;
                 }
                 score = 0;
+                label_score.Content = "Score: 0";
                 canvas.Children.Clear();
                 static_boxes.Clear();
                 init_dict();
