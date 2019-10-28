@@ -24,15 +24,15 @@ namespace Tetris
         DispatcherTimer timer = new DispatcherTimer();
         Dictionary<double, List<Tetrimino.Box>> static_boxes = new Dictionary<double, List<Tetrimino.Box>>();
         Tetrimino falling_tetrimino;
-        int normal_speed = 25;
+        int normal_speed = 30;
         int fast_speed = 30;
         int drop_speed = 3;
         int score = 0;
         int top_score = 0;
-        double a = -0.510066 - 0.1;
-        double b = 0.760666 + 0.5;
-        double c = -0.35633 - 0.15;
-        double d = -0.184483 - 0.02;
+        double a = -0.510066;
+        double b = 0.760666;
+        double c = -0.35633-0.35;
+        double d = -0.184483;
 
         bool speed_key = false;
 
@@ -44,6 +44,7 @@ namespace Tetris
 
         void simulate()
         {
+            Console.WriteLine("simulate START");
             List<double> zero_state = new List<double>();
             List<double> moves_evaluation = new List<double>();
             Dictionary<int, List<double>> dict = new Dictionary<int, List<double>>();
@@ -67,6 +68,8 @@ namespace Tetris
             {
                 dict.Add(i, new List<double>());
             }
+            //Console.WriteLine("simulate checkpoint 1");
+
             for (int i = 0; i < states; i++)
             {
                 while (move_left()) ;
@@ -88,6 +91,7 @@ namespace Tetris
                 move_left();
                 rotate();
             }
+            //Console.WriteLine("simulate checkpoint 2");
             // return to zero_state
             for (int i = 0; i < 8; i += 2)
             {
@@ -95,7 +99,7 @@ namespace Tetris
                 falling_tetrimino.boxes[i / 2].rect.SetValue(Canvas.LeftProperty, zero_state[i + 1]);
             }
             move_down();
-
+            //Console.WriteLine("simulate checkpoint 3");
             double global_max = double.MinValue;
             int global_max_index = 0;
             List<double> local_max = new List<double>();
@@ -115,6 +119,7 @@ namespace Tetris
                 local_max.Add(loc_max);
                 local_max_index.Add(loc_max_index);
             }
+            //Console.WriteLine("simulate checkpoint 4");
             for (int i = 0; i < local_max.Count; i++)
             {
                 if (local_max[i] > global_max)
@@ -123,18 +128,19 @@ namespace Tetris
                     global_max_index = i;
                 }
             }
-
+            //Console.WriteLine("simulate checkpoint 5");
+            int safe_break = 5;
             do
             {
                 rotate();
-            } while (falling_tetrimino.position != global_max_index);
+            } while (falling_tetrimino.position != global_max_index && safe_break-- > 0);
             while (move_left()) ;
-
+            //Console.WriteLine("simulate checkpoint 6");
             for (int i = 0; i < local_max_index[global_max_index]; i++)
             {
                 move_right();
             }
-
+            //Console.WriteLine("simulate STOP");
         }
 
         double evaluate_move()
@@ -144,7 +150,6 @@ namespace Tetris
             var height = hhb[0];
             var holes = hhb[1];
             var bumpiness = hhb[2];
-
             return a * height + b * lines + c * holes + d * bumpiness;
         }
 
@@ -268,7 +273,7 @@ namespace Tetris
                     flag = true;
                 }
                 if (check_drop())
-                {
+                {        
                     drop();
                     try
                     {
@@ -293,7 +298,6 @@ namespace Tetris
             {
                 static_boxes[Canvas.GetTop(box.rect)].Add(box);
             }
-            check_win();
             if (check_loose())
             {
                 MessageBox.Show("Gamover!");
@@ -308,7 +312,7 @@ namespace Tetris
                 static_boxes.Clear();
                 init_dict();
             }
-
+            check_win();
             timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
             new_tetrimino();
         }

@@ -11,7 +11,7 @@ namespace Tetris
 {
     class Tetrimino
     {
-        static char[] shapes = { 'I', 'T', 'O', 'L', 'J', 'S', 'Z' };
+        static char[] shapes = { 'I', 'O', 'T', 'L', 'J', 'S', 'Z' };
         static List<char> available_shapes = new List<char>(shapes);
         public char shape;
         public List<Box> boxes;
@@ -27,6 +27,10 @@ namespace Tetris
                 {
                     available_shapes.Add(shapes[i]);
                 }
+                //for (int i = 0; i < 1; i++)
+                //{
+                //    available_shapes.Add(shapes[r.Next(5)]);
+                //}
             }
             // random shape
             int index = r.Next(available_shapes.Count);
