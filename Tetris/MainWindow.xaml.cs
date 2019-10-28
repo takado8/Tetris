@@ -24,15 +24,15 @@ namespace Tetris
         DispatcherTimer timer = new DispatcherTimer();
         Dictionary<double, List<Tetrimino.Box>> static_boxes = new Dictionary<double, List<Tetrimino.Box>>();
         Tetrimino falling_tetrimino;
-        int normal_speed = 3;
+        int normal_speed = 25;
         int fast_speed = 30;
         int drop_speed = 3;
         int score = 0;
         int top_score = 0;
-        double a = -0.510066;
-        double b = 0.760666;
-        double c = -0.35633;
-        double d = -0.184483;
+        double a = -0.510066 - 0.1;
+        double b = 0.760666 + 0.5;
+        double c = -0.35633 - 0.15;
+        double d = -0.184483 - 0.02;
 
         bool speed_key = false;
 
@@ -104,7 +104,7 @@ namespace Tetris
             {
                 double loc_max = double.MinValue;
                 int loc_max_index = -1;
-                for(int i=0; i<list.Value.Count; i++)
+                for (int i = 0; i < list.Value.Count; i++)
                 {
                     if (list.Value[i] > loc_max)
                     {
@@ -117,24 +117,24 @@ namespace Tetris
             }
             for (int i = 0; i < local_max.Count; i++)
             {
-                if(local_max[i] > global_max)
+                if (local_max[i] > global_max)
                 {
                     global_max = local_max[i];
                     global_max_index = i;
                 }
             }
-            
+
             do
             {
                 rotate();
             } while (falling_tetrimino.position != global_max_index);
-            while (move_left());
+            while (move_left()) ;
 
             for (int i = 0; i < local_max_index[global_max_index]; i++)
             {
                 move_right();
             }
-           
+
         }
 
         double evaluate_move()
@@ -260,19 +260,31 @@ namespace Tetris
         bool flag = false;
         private void Timer_Tick(object sender, EventArgs e)
         {
-            if(!flag)
+            try
             {
-                simulate();
-                flag = true;
+                if (!flag)
+                {
+                    simulate();
+                    flag = true;
+                }
+                if (check_drop())
+                {
+                    drop();
+                    try
+                    {
+                        simulate();
+                    }
+                    catch
+                    { MessageBox.Show("catch!"); }
+                    return;
+                }
+                //move
+                move_down();
             }
-            if (check_drop())
+            catch
             {
-                drop();
-                simulate();
-                return;
+                MessageBox.Show("catch big time");
             }
-            //move
-            move_down();
         }
 
         void drop()
