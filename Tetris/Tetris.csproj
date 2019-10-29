@@ -58,6 +58,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AI.cs" />
+    <Compile Include="Genetics.cs" />
     <Compile Include="Tetrimino.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
