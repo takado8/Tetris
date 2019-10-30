@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Threading;
 
 namespace Tetris
 {
@@ -22,30 +23,34 @@ namespace Tetris
     public partial class MainWindow : Window
     {
         Genetics gen = new Genetics();
+
         int ai_index = 0;
-        int tetrimino_limit = 1000;
+        int tetrimino_limit = 10000000;
         int tetrimino_count = 0;
-        int games_limit = 2;
+        int games_limit = 10;
         int games_count = 0;
         double total_score = 0;
         int generation = 1;
-        bool genetic = true;
+        bool genetic = false;
 
+        static Semaphore semaphore = new Semaphore(1, 1);
+        static Semaphore semaphore2 = new Semaphore(1, 1);
+        static Semaphore semaphore3 = new Semaphore(1, 1);
         DispatcherTimer timer = new DispatcherTimer();
         Dictionary<double, List<Tetrimino.Box>> static_boxes = new Dictionary<double, List<Tetrimino.Box>>();
         Tetrimino falling_tetrimino;
         int normal_speed = 0;
-        int fast_speed = 30;
+        int fast_speed = 50;
         int drop_speed = 3;
         int score = 0;
         int top_score = 0;
         double total_time = 0;
         double t = 0;
 
-        double a = -0.510066;
-        double b = 0.760666;
-        double c = -0.35633;
-        double d = -0.184483;
+        double a = -0.803024941665314;//-0.510066;
+        double b = 0.52098308304513;//0.760666;
+        double c = -0.239924434836126;//-0.35633;
+        double d = -0.161752390439142;//-0.184483;
 
         bool speed_key = false;
 
@@ -57,7 +62,7 @@ namespace Tetris
 
         void simulate()
         {
-
+            semaphore2.WaitOne();
             List<double> zero_state = new List<double>();
             List<double> moves_evaluation = new List<double>();
             Dictionary<int, List<double>> dict = new Dictionary<int, List<double>>();
@@ -81,7 +86,7 @@ namespace Tetris
             {
                 dict.Add(i, new List<double>());
             }
-
+            int k = 0;
             for (int i = 0; i < states; i++)
             {
                 while (move_left()) ;
@@ -94,6 +99,11 @@ namespace Tetris
                     }
                     // check state
                     var evaluation = evaluate_move();
+                    k++;
+                    //Console.WriteLine("pos: " + k + "  " + evaluation);
+                    //MessageBox.Show("");
+                    canvas.UpdateLayout();
+                    //InvalidateVisual();
                     dict[i].Add(evaluation);
 
                     while (move_up()) ;
@@ -149,15 +159,18 @@ namespace Tetris
             {
                 move_right();
             }
+            semaphore2.Release();
         }
 
         double evaluate_move()
         {
+            semaphore3.WaitOne();
             var hhb = height_holes_bumpiness();
             var lines = complete_lines();
             var height = hhb[0];
             var holes = hhb[1];
             var bumpiness = hhb[2];
+            semaphore3.Release();
             return a * height + b * lines + c * holes + d * bumpiness;
         }
 
@@ -242,22 +255,32 @@ namespace Tetris
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            gen.init_random_population();
             init_dict();
             new_tetrimino();
-            timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
-            timer.Tick += Timer_Tick;
-            timer.IsEnabled = true;
+            
 
             if (genetic)
             {
+                gen.init_random_population();
                 a = gen.population[ai_index][0];
                 b = gen.population[ai_index][1];
                 c = gen.population[ai_index][2];
                 d = gen.population[ai_index][3];
             }
             simulate();
+            timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+          
 
+        }
+
+        void reset_timer()
+        {
+           // timer.Dispatcher.DisableProcessing();
+            timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
+            timer.Tick += Timer_Tick;
         }
 
         void init_dict()
@@ -281,29 +304,32 @@ namespace Tetris
             return false;
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
+        void f()
         {
-
+            
+            //timer.Stop();
             if (check_drop())
             {
+
                 drop();
-                // var watch = System.Diagnostics.Stopwatch.StartNew();
-                // the code that you want to measure comes here
-
                 simulate();
+                //MessageBox.Show("");
+                //reset_timer();
 
-                // watch.Stop();
-                // var time = watch.ElapsedMilliseconds;
-                //  total_time += time;
-                //  if(t++ == 100)
-                // {
-                //     Console.WriteLine("average time: " + (total_time/t));
-                // }
+                //timer.Start();
                 return;
             }
             //move
             move_down();
+            //reset_timer();
+            //timer.Start();
+        }
 
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            //semaphore.WaitOne();
+            f();
+           // semaphore.Release();
         }
 
         void drop()
@@ -330,7 +356,7 @@ namespace Tetris
                 canvas.Children.Clear();
                 static_boxes.Clear();
                 init_dict();
-                if (games_count == games_limit)
+                if (games_count == games_limit && genetic)
                 {
                     label_game.Content = "Games: 0";
                     games_count = 0;
