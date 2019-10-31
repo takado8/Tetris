@@ -12,17 +12,16 @@ namespace Tetris
     class Tetrimino
     {
         static char[] shapes = { 'I', 'O', 'T', 'L', 'J', 'S', 'Z' };
-        static List<char> available_shapes = new List<char>(shapes);
-        public char shape;
         static int index = 7;
+
+        public char shape;
         public List<Box> boxes;
         static int id = 0;
         public int position = 0;
-        static Random r = new Random();
 
         public Tetrimino()
-        {     
-            if(index == shapes.Length)
+        {
+            if (index == shapes.Length)
             {
                 Shuffle();
                 index = 0;
@@ -37,12 +36,11 @@ namespace Tetris
             while (n > 1)
             {
                 n--;
-                int k = r.Next(n + 1);
+                int k = Rand.Next(n + 1);
                 var value = shapes[k];
                 shapes[k] = shapes[n];
                 shapes[n] = value;
             }
-      
         }
 
         void build_tetrimino()
@@ -137,9 +135,10 @@ namespace Tetris
         public class Box
         {
             public const int size = 26;
-            public Brush color = Brushes.ForestGreen;
+            Brush color;// = Brushes.ForestGreen;
             public Rectangle rect;
-            public Box(Brush color, int _id, double top = 0.0, double left = 78.0)
+
+            public Box(Brush color, int _id, double top = 0.0, double left = 3 * size)
             {
                 rect = new Rectangle();
                 rect.Tag = _id;

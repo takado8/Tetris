@@ -9,9 +9,7 @@ namespace Tetris
     class AI
     {
         public double fitness;
-        static Random r = new Random();
         public List<double> genotype = new List<double>();
-
 
         public AI(bool rand_init = true)
         {
@@ -23,10 +21,9 @@ namespace Tetris
 
         public void random_init()
         {
-            //fitness = 2 * r.NextDouble() - 1;  ///////////////rehjukjuyjtyjddfhj
             for (int i = 0; i < 4; i++)
             {
-                genotype.Add(r.NextDouble() - 0.5); // random < -1;1 )
+                genotype.Add(Rand.NextDouble(-1,1)); // random < -1;1 )
             }
             normalize();
         }

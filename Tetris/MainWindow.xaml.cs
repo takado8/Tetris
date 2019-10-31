@@ -25,44 +25,74 @@ namespace Tetris
         Genetics gen = new Genetics();
 
         int ai_index = 0;
-        int tetrimino_limit = 10000000;
-        int tetrimino_count = 0;
-        int games_limit = 10;
+        int tetrimino_limit = 250;
+        int tetrimino_count = 1;
+        int games_limit = 2;
         int games_count = 0;
         double total_score = 0;
         int generation = 1;
-        bool genetic = false;
 
-        static Semaphore semaphore = new Semaphore(1, 1);
-        static Semaphore semaphore2 = new Semaphore(1, 1);
-        static Semaphore semaphore3 = new Semaphore(1, 1);
         DispatcherTimer timer = new DispatcherTimer();
         Dictionary<double, List<Tetrimino.Box>> static_boxes = new Dictionary<double, List<Tetrimino.Box>>();
         Tetrimino falling_tetrimino;
-        int normal_speed = 0;
-        int fast_speed = 50;
-        int drop_speed = 3;
+
+        const int normal_speed = 0;
+        const int fast_speed = 30;
+        const int drop_speed = 1;
+        const bool genetic = true;
+        const bool auto = true;
+
         int score = 0;
         int top_score = 0;
-        double total_time = 0;
-        double t = 0;
-
-        double a = -0.803024941665314;//-0.510066;
-        double b = 0.52098308304513;//0.760666;
-        double c = -0.239924434836126;//-0.35633;
-        double d = -0.161752390439142;//-0.184483;
-
+        double max_column_h = 0;
+        double total_h = 0;
+        int n = 0;
         bool speed_key = false;
 
+        double a = -0.803024941665314;//-0.510066;  //accumulate height
+        double b = 0.52098308304513;//0.760666;     //complete lines
+        double c = -0.239924434836126;//-0.35633;   //holes
+        double d = -0.161752390439142;//-0.184483;  //bumpiness
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            init_dict();
+            new_tetrimino();
+
+            if (genetic)
+            {
+                gen.init_random_population();
+                a = gen.population[ai_index][0];
+                b = gen.population[ai_index][1];
+                c = gen.population[ai_index][2];
+                d = gen.population[ai_index][3];
+            }
+            if (auto) simulate();
+
+            timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (check_drop())
+            {
+                drop();
+                if (auto) simulate();
+                return;
+            }
+            //move
+            move_down();
+        }
+
         void simulate()
         {
-            semaphore2.WaitOne();
             List<double> zero_state = new List<double>();
             List<double> moves_evaluation = new List<double>();
             Dictionary<int, List<double>> dict = new Dictionary<int, List<double>>();
@@ -86,11 +116,10 @@ namespace Tetris
             {
                 dict.Add(i, new List<double>());
             }
-            int k = 0;
+
             for (int i = 0; i < states; i++)
             {
                 while (move_left()) ;
-                //max_left();
                 do
                 {
                     while (!check_drop())
@@ -98,12 +127,8 @@ namespace Tetris
                         move_down();
                     }
                     // check state
-                    var evaluation = evaluate_move();
-                    k++;
-                    //Console.WriteLine("pos: " + k + "  " + evaluation);
-                    //MessageBox.Show("");
                     canvas.UpdateLayout();
-                    //InvalidateVisual();
+                    var evaluation = evaluate_move();
                     dict[i].Add(evaluation);
 
                     while (move_up()) ;
@@ -154,23 +179,20 @@ namespace Tetris
                 rotate();
             } while (falling_tetrimino.position != global_max_index && safe_break-- > 0);
             while (move_left()) ;
-            //max_left();
+
             for (int i = 0; i < local_max_index[global_max_index]; i++)
             {
                 move_right();
             }
-            semaphore2.Release();
         }
 
         double evaluate_move()
         {
-            semaphore3.WaitOne();
             var hhb = height_holes_bumpiness();
             var lines = complete_lines();
             var height = hhb[0];
             var holes = hhb[1];
             var bumpiness = hhb[2];
-            semaphore3.Release();
             return a * height + b * lines + c * holes + d * bumpiness;
         }
 
@@ -215,11 +237,20 @@ namespace Tetris
                 min = canvas.Height;
             }
             double columns_dif = 0;
+            if (columns_height[0] > max_column_h)
+            {
+                max_column_h = columns_height[0];
+            }
             for (int i = 0; i < columns_height.Count - 1; i++)
             {
+                if (columns_height[i + 1] > max_column_h)
+                {
+                    max_column_h = columns_height[i + 1];
+                }
                 columns_dif += Math.Abs(columns_height[i] - columns_height[i + 1]);
             }
-
+            total_h += sum;
+            n++;
             result[0] = sum;
             result[1] = holes;
             result[2] = columns_dif;
@@ -253,36 +284,6 @@ namespace Tetris
             return lines;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            init_dict();
-            new_tetrimino();
-            
-
-            if (genetic)
-            {
-                gen.init_random_population();
-                a = gen.population[ai_index][0];
-                b = gen.population[ai_index][1];
-                c = gen.population[ai_index][2];
-                d = gen.population[ai_index][3];
-            }
-            simulate();
-            timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
-            timer.Tick += Timer_Tick;
-            timer.Start();
-          
-
-        }
-
-        void reset_timer()
-        {
-           // timer.Dispatcher.DisableProcessing();
-            timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
-            timer.Tick += Timer_Tick;
-        }
-
         void init_dict()
         {
             for (int i = 0; i < 20; i++)
@@ -304,45 +305,25 @@ namespace Tetris
             return false;
         }
 
-        void f()
-        {
-            
-            //timer.Stop();
-            if (check_drop())
-            {
-
-                drop();
-                simulate();
-                //MessageBox.Show("");
-                //reset_timer();
-
-                //timer.Start();
-                return;
-            }
-            //move
-            move_down();
-            //reset_timer();
-            //timer.Start();
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            //semaphore.WaitOne();
-            f();
-           // semaphore.Release();
-        }
-
         void drop()
         {
+            if (!auto)
+            {
+                timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
+            }
             foreach (var box in falling_tetrimino.boxes)
             {
                 static_boxes[Canvas.GetTop(box.rect)].Add(box);
             }
-            label_tetr_count.Content = "Tetr: " + (tetrimino_count + 2);
-            if (check_loose() || tetrimino_count++ == tetrimino_limit) // next game
+            label_tetr_count.Content = "Tetr: " + (tetrimino_count + 1);
+
+            if (check_loose() || (tetrimino_count++ == tetrimino_limit && genetic)) // next game
             {
-                //MessageBox.Show("Gamover!");
-                tetrimino_count = 0;
+                if (!genetic)
+                {
+                    MessageBox.Show("Gamover!");
+                }
+                tetrimino_count = 1;
 
                 label_game.Content = "Games: " + ++games_count;
                 if (score > top_score)
@@ -360,8 +341,25 @@ namespace Tetris
                 {
                     label_game.Content = "Games: 0";
                     games_count = 0;
-                    gen.population[ai_index].fitness = total_score;
+                    gen.population[ai_index].fitness = total_score *
+                        (1 - max_column_h / 21) * (1 - (total_h / 100) / n);
+                    Console.WriteLine("total_score * (1 - max_column_h / canvas.Height) * (1 - total_h / canvas.Height / n)" + max_column_h);
+                    Console.WriteLine("max column: " + max_column_h);
+                    Console.WriteLine("total h: " + total_h);
+                    Console.WriteLine("n: " + n);
+                    Console.WriteLine("(1 - max_column_h / 21): " + (1 - max_column_h / 21));
+                    Console.WriteLine("(1 - total_h / 200 / n) : " + (1 - total_h / 120 / n));
+                    Console.WriteLine("total: " + ((1 - max_column_h / 21) * (1 - total_h / 120 / n)));
+                    Console.WriteLine("fitness: " + gen.population[ai_index].fitness);
+                    Console.WriteLine("========================================================================");
+
+
+
                     total_score = 0;
+                    n = 0;
+                    max_column_h = 0;
+                    total_h = 0;
+
                     ai_index++;
                     if (ai_index == gen.population.Count)
                     {
@@ -370,23 +368,18 @@ namespace Tetris
                         label_gen.Content = "Gen: " + generation;
                         gen.save_population();
                         gen.evolve();
+                    }
+                    a = gen.population[ai_index][0];
+                    b = gen.population[ai_index][1];
+                    c = gen.population[ai_index][2];
+                    d = gen.population[ai_index][3];
 
-                    }
-                    if (genetic)
-                    {
-                        a = gen.population[ai_index][0];
-                        b = gen.population[ai_index][1];
-                        c = gen.population[ai_index][2];
-                        d = gen.population[ai_index][3];
-                    }
                     label_index.Content = "AI: " + (ai_index + 1);
                 }
             }
             check_win();
-            //timer.Interval = new TimeSpan(0, 0, 0, 0, normal_speed);
             new_tetrimino();
         }
-
 
         /// <param name="dir">0 down, 1 left, 2 right, 3 up</param>
         bool obstacle_in_way(Tetrimino.Box box, int dir, int range = 1)
@@ -428,8 +421,8 @@ namespace Tetris
             var hit = canvas.InputHitTest(point);
             try
             {
-                var ee = (Rectangle)hit;
-                if ((int)ee.Tag != (int)box.rect.Tag)
+                var _hit = (Rectangle)hit;
+                if ((int)_hit.Tag != (int)box.rect.Tag)
                 {
                     return true;
                 }
@@ -493,6 +486,7 @@ namespace Tetris
                 box.rect.SetValue(Canvas.TopProperty, current);
             }
         }
+
         bool move_up()
         {
             foreach (var box in falling_tetrimino.boxes)
@@ -507,6 +501,7 @@ namespace Tetris
             }
             return true;
         }
+
         bool move_right()
         {
             foreach (var box in falling_tetrimino.boxes)
@@ -524,24 +519,6 @@ namespace Tetris
             return true;
         }
 
-        void max_left()
-        {
-            double min_left = Canvas.GetLeft(falling_tetrimino.boxes[0].rect);
-            for (int i = 1; i < 4; i++)
-            {
-                if (Canvas.GetLeft(falling_tetrimino.boxes[i].rect) < min_left)
-                {
-                    min_left = Canvas.GetLeft(falling_tetrimino.boxes[i].rect);
-                }
-            }
-            double steps = min_left / Tetrimino.Box.size;
-            foreach (var box in falling_tetrimino.boxes)
-            {
-                var current = Canvas.GetLeft(box.rect);
-                current -= steps * Tetrimino.Box.size;
-                box.rect.SetValue(Canvas.LeftProperty, current);
-            }
-        }
         bool move_left()
         {
             foreach (var box in falling_tetrimino.boxes)
@@ -593,21 +570,6 @@ namespace Tetris
                     timer.IsEnabled = true;
                     label_pause.Visibility = Visibility.Hidden;
                 }
-            }
-            else if (e.Key == Key.S)
-            {
-                simulate();
-            }
-            else if (e.Key == Key.Escape)
-            {
-                canvas.Children.Clear();
-                static_boxes.Clear();
-                init_dict();
-                new_tetrimino();
-            }
-            else if (e.Key == Key.H)
-            {
-
             }
         }
 

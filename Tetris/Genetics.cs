@@ -9,12 +9,12 @@ namespace Tetris
 {
     class Genetics
     {
-        static Random r = new Random();
         public List<AI> population = new List<AI>();
-        public List<AI> offspring = new List<AI>();
-        public const int count = 100;
+        List<AI> offspring = new List<AI>();
+
+        const int count = 60;
         const double mutation_rate = 0.05;
-        const double reproduction_rate = 0.4;
+        const double reproduction_rate = 0.5;
 
         public Genetics()
         {
@@ -41,21 +41,20 @@ namespace Tetris
             }
         }
 
-        public void new_generation()
+        void new_generation()
         {
             population.Sort((y, x) => x.fitness.CompareTo(y.fitness));
             offspring.Add(mutate(crossing_over(population[0], population[1]))); // elitism
-            while(offspring.Count < reproduction_rate * count)
+            while (offspring.Count < reproduction_rate * count)
             {
                 // select random 10%
                 List<AI> temp = new List<AI>();
                 for (int i = 0; i < 0.1 * count; i++)
                 {
-                    temp.Add(population[r.Next(population.Count)]);
+                    temp.Add(population[Rand.Next(population.Count)]);
                 }
 
                 temp.Sort((y, x) => x.fitness.CompareTo(y.fitness));
-
                 // top 2 for crossing over
                 var c = crossing_over(temp[0], temp[1]);
                 c = mutate(c);
@@ -71,16 +70,15 @@ namespace Tetris
                 c.Add(a[i] * a.fitness + b[i] * b.fitness);
             }
             c.normalize();
-            //c.fitness = (a.fitness + b.fitness) / 2; ////////////////yuyuuyyuyuy
             return c;
         }
 
         AI mutate(AI c)
         {
-            if (r.NextDouble() < mutation_rate)
+            if (Rand.NextDouble() < mutation_rate)
             {
 
-                c[r.Next(c.genotype.Count)] += r.NextDouble() * 0.4 - 0.2; //  +/-0.2
+                c[Rand.Next(c.genotype.Count)] += Rand.NextDouble(-0.2, 0.2); //  +/-0.2
                 c.normalize();
             }
             return c;
@@ -100,12 +98,12 @@ namespace Tetris
             population.Sort((y, x) => x.fitness.CompareTo(y.fitness));
 
             double av_fitness = 0;
-            foreach(var v in population)
+            foreach (var v in population)
             {
                 av_fitness += v.fitness;
             }
             av_fitness /= population.Count;
-            string dir_name = "generations/" + DateTime.Now.ToString("dd-MM-yyyy HH.mm") + "-"+av_fitness;
+            string dir_name = "generations/" + DateTime.Now.ToString("dd-MM-yyyy HH.mm") + "-" + av_fitness;
 
             if (!Directory.Exists(dir_name))
             {
@@ -113,13 +111,12 @@ namespace Tetris
             }
             for (int i = 0; i < population.Count; i++)
             {
-                StreamWriter sw = new StreamWriter(dir_name + "/" + i + "-" + population[i].fitness+".txt", append: true);
+                StreamWriter sw = new StreamWriter(dir_name + "/" + i + "-" + population[i].fitness + ".txt", append: true);
                 foreach (var value in population[i].genotype)
                 {
                     sw.WriteLine(value.ToString());
                 }
                 sw.Close();
-
             }
         }
     }

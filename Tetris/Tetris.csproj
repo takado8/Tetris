@@ -60,6 +60,7 @@
     </ApplicationDefinition>
     <Compile Include="AI.cs" />
     <Compile Include="Genetics.cs" />
+    <Compile Include="Rand.cs" />
     <Compile Include="Tetrimino.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
