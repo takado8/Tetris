@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Threading;
+using System.Text.RegularExpressions;
+using System.IO;
 
 namespace Tetris
 {
@@ -25,9 +27,9 @@ namespace Tetris
         Genetics gen = new Genetics();
 
         int ai_index = 0;
-        int tetrimino_limit = 250;
+        int tetrimino_limit = 10000;
         int tetrimino_count = 1;
-        int games_limit = 2;
+        int games_limit = 3;
         int games_count = 0;
         double total_score = 0;
         int generation = 1;
@@ -44,15 +46,13 @@ namespace Tetris
 
         int score = 0;
         int top_score = 0;
-        double max_column_h = 0;
-        double total_h = 0;
-        int n = 0;
+        
         bool speed_key = false;
 
-        double a = -0.803024941665314;//-0.510066;  //accumulate height
-        double b = 0.52098308304513;//0.760666;     //complete lines
-        double c = -0.239924434836126;//-0.35633;   //holes
-        double d = -0.161752390439142;//-0.184483;  //bumpiness
+        double a = -0.798752914564018;//-0.510066;  //accumulate height
+        double b = 0.522287506868767;//0.760666;     //complete lines
+        double c = -0.24921408023878;//-0.35633;   //holes
+        double d = -0.164626498034284;//-0.184483;  //bumpiness
 
         public MainWindow()
         {
@@ -66,7 +66,15 @@ namespace Tetris
 
             if (genetic)
             {
-                gen.init_random_population();
+                string dir_name = "read population";
+                if (Directory.Exists(dir_name) && Directory.GetFiles(dir_name).Length > 0)
+                {
+                    gen.read_population();
+                }
+                else
+                {
+                    gen.init_random_population();
+                }
                 a = gen.population[ai_index][0];
                 b = gen.population[ai_index][1];
                 c = gen.population[ai_index][2];
@@ -188,15 +196,15 @@ namespace Tetris
 
         double evaluate_move()
         {
-            var hhb = height_holes_bumpiness();
             var lines = complete_lines();
+            var hhb = height_holes_bumpiness(lines);
             var height = hhb[0];
             var holes = hhb[1];
             var bumpiness = hhb[2];
             return a * height + b * lines + c * holes + d * bumpiness;
         }
 
-        double[] height_holes_bumpiness()
+        double[] height_holes_bumpiness(double compl_lines)
         {
             List<double> columns_height = new List<double>();
             double sum = 0;
@@ -237,21 +245,21 @@ namespace Tetris
                 min = canvas.Height;
             }
             double columns_dif = 0;
-            if (columns_height[0] > max_column_h)
-            {
-                max_column_h = columns_height[0];
-            }
+            //if (columns_height[0] > max_column_h)
+            //{
+            //    max_column_h = columns_height[0];
+            //}
             for (int i = 0; i < columns_height.Count - 1; i++)
             {
-                if (columns_height[i + 1] > max_column_h)
-                {
-                    max_column_h = columns_height[i + 1];
-                }
+                //if (columns_height[i + 1] > max_column_h)
+                //{
+                //    max_column_h = columns_height[i + 1];
+                //}
                 columns_dif += Math.Abs(columns_height[i] - columns_height[i + 1]);
             }
-            total_h += sum;
-            n++;
-            result[0] = sum;
+            //total_h += sum;
+            //n++;
+            result[0] = sum - 10 * compl_lines;
             result[1] = holes;
             result[2] = columns_dif;
             return result;
@@ -341,25 +349,8 @@ namespace Tetris
                 {
                     label_game.Content = "Games: 0";
                     games_count = 0;
-                    gen.population[ai_index].fitness = total_score *
-                        (1 - max_column_h / 21) * (1 - (total_h / 100) / n);
-                    Console.WriteLine("total_score * (1 - max_column_h / canvas.Height) * (1 - total_h / canvas.Height / n)" + max_column_h);
-                    Console.WriteLine("max column: " + max_column_h);
-                    Console.WriteLine("total h: " + total_h);
-                    Console.WriteLine("n: " + n);
-                    Console.WriteLine("(1 - max_column_h / 21): " + (1 - max_column_h / 21));
-                    Console.WriteLine("(1 - total_h / 200 / n) : " + (1 - total_h / 120 / n));
-                    Console.WriteLine("total: " + ((1 - max_column_h / 21) * (1 - total_h / 120 / n)));
-                    Console.WriteLine("fitness: " + gen.population[ai_index].fitness);
-                    Console.WriteLine("========================================================================");
-
-
-
-                    total_score = 0;
-                    n = 0;
-                    max_column_h = 0;
-                    total_h = 0;
-
+                    gen.population[ai_index].fitness = total_score;                   
+                    total_score = 0;               
                     ai_index++;
                     if (ai_index == gen.population.Count)
                     {
@@ -373,7 +364,6 @@ namespace Tetris
                     b = gen.population[ai_index][1];
                     c = gen.population[ai_index][2];
                     d = gen.population[ai_index][3];
-
                     label_index.Content = "AI: " + (ai_index + 1);
                 }
             }
@@ -390,23 +380,23 @@ namespace Tetris
             double delta_top = 0;
             if (dir == 0) //down
             {
-                delta_left = 0.00001;
-                delta_top = range * Tetrimino.Box.size + 0.00001;
+                delta_left = 1;
+                delta_top = range * Tetrimino.Box.size + 1;
             }
             else if (dir == 1) //left
             {
-                delta_left = -0.00001 - (range - 1) * Tetrimino.Box.size;
-                delta_top = 0.00001;
+                delta_left = -1 - (range - 1) * Tetrimino.Box.size;
+                delta_top = 1;
             }
             else if (dir == 2) //right
             {
-                delta_top = 0.00001;
-                delta_left = range * Tetrimino.Box.size + 0.00001;
+                delta_top = 1;
+                delta_left = range * Tetrimino.Box.size + 1;
             }
             else if (dir == 3) //up
             {
-                delta_top = -((range - 1) * Tetrimino.Box.size + 0.00001);
-                delta_left = 0.00001;
+                delta_top = -((range - 1) * Tetrimino.Box.size + 1);
+                delta_left = 1;
             }
             var new_left = left + delta_left;
             var new_top = top + delta_top;
@@ -421,7 +411,7 @@ namespace Tetris
             var hit = canvas.InputHitTest(point);
             try
             {
-                var _hit = (Rectangle)hit;
+                var _hit = (Border)hit;
                 if ((int)_hit.Tag != (int)box.rect.Tag)
                 {
                     return true;

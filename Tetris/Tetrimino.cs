@@ -136,17 +136,22 @@ namespace Tetris
         {
             public const int size = 26;
             Brush color;// = Brushes.ForestGreen;
-            public Rectangle rect;
+            //public Rectangle rect;
+            public Border rect;
 
             public Box(Brush color, int _id, double top = 0.0, double left = 3 * size)
             {
-                rect = new Rectangle();
+                rect = new Border();//new Rectangle();
                 rect.Tag = _id;
-                rect.Stroke = Brushes.Black;
-                rect.StrokeThickness = 0.1;
+                rect.CornerRadius = new System.Windows.CornerRadius(3);
+                //rect.Stroke = Brushes.Black;
+                rect.BorderBrush = Brushes.Black;
+                //rect.StrokeThickness = 0.1;
+                rect.BorderThickness = new System.Windows.Thickness(0.6);
                 rect.Height = size;
                 rect.Width = size;
-                rect.Fill = color;
+                //rect.Fill = color;
+                rect.Background = color;
                 rect.SetValue(Canvas.TopProperty, top);
                 rect.SetValue(Canvas.LeftProperty, left);
             }

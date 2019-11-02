@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Tetris
 {
@@ -12,7 +13,7 @@ namespace Tetris
         public List<AI> population = new List<AI>();
         List<AI> offspring = new List<AI>();
 
-        const int count = 60;
+        const int count = 100;
         const double mutation_rate = 0.05;
         const double reproduction_rate = 0.5;
 
@@ -117,6 +118,29 @@ namespace Tetris
                     sw.WriteLine(value.ToString());
                 }
                 sw.Close();
+            }
+        }
+        public void read_population()
+        {
+            string dir_path = "read population";
+            if (Directory.Exists(dir_path))
+            {
+                Regex rex = new Regex("[0-9]+-(.+).txt");
+                foreach (var path in Directory.GetFiles(dir_path))
+                {
+                    AI temp = new AI(false);
+                    var maches = rex.Match(path);
+                    temp.fitness = double.Parse(maches.Groups[1].Value);
+                    using (StreamReader sr = new StreamReader(path))
+                    {
+                        string line;
+                        while((line = sr.ReadLine()) != null)
+                        {
+                            temp.Add(double.Parse(line));
+                        }
+                    }
+                    population.Add(temp);
+                }
             }
         }
     }
