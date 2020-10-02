@@ -1,7 +1,9 @@
 # Tetris
-AI for playing tetris.
+Tetris environment and AI for playing it.
 
-Every possible move is simulated and four heuristics are used for gamefield evaluation:
+## AI algorithm:
+
+In each turn every possible move is simulated and four heuristics are used for gamefield evaluation:
 1. Height - summed height of the columns.
 2. Complete lines - number of completed lines.
 3. Holes - number of 'holes' - empty inaccessible space.
