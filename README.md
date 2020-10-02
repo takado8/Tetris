@@ -6,7 +6,7 @@ Tetris environment and AI for playing it.
 In each turn every possible move is simulated and four heuristics are used for gamefield evaluation:
 1. Height - summed height of the columns.
 2. Complete lines - number of completed lines.
-3. Holes - number of 'holes' - empty inaccessible space.
+3. Holes - number of 'holes' - empty inaccessible spaces.
 4. Bumpiness - summed difference of adjacent columns height.
 
 each value has a multiplier (successively a, b, c, d), so the complete equation looks like this:
