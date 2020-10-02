@@ -13,7 +13,7 @@ namespace Tetris
         public List<AI> population = new List<AI>();
         List<AI> offspring = new List<AI>();
 
-        const int count = 100;
+        const int count = 16;
         const double mutation_rate = 0.05;
         const double reproduction_rate = 0.5;
 
@@ -78,7 +78,6 @@ namespace Tetris
         {
             if (Rand.NextDouble() < mutation_rate)
             {
-
                 c[Rand.Next(c.genotype.Count)] += Rand.NextDouble(-0.2, 0.2); //  +/-0.2
                 c.normalize();
             }
@@ -125,9 +124,12 @@ namespace Tetris
             string dir_path = "read population";
             if (Directory.Exists(dir_path))
             {
+                int counter = 0;
                 Regex rex = new Regex("[0-9]+-(.+).txt");
                 foreach (var path in Directory.GetFiles(dir_path))
                 {
+                    
+                    
                     AI temp = new AI(false);
                     var maches = rex.Match(path);
                     temp.fitness = double.Parse(maches.Groups[1].Value);
@@ -140,7 +142,12 @@ namespace Tetris
                         }
                     }
                     population.Add(temp);
+                    if (++counter == count)
+                    {
+                        break;
+                    }
                 }
+                Console.WriteLine("population count: " + population.Count);
             }
         }
     }

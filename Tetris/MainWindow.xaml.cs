@@ -27,9 +27,9 @@ namespace Tetris
         Genetics gen = new Genetics();
 
         int ai_index = 0;
-        int tetrimino_limit = 10000;
+        int tetrimino_limit = 500;
         int tetrimino_count = 1;
-        int games_limit = 3;
+        int games_limit = 1;
         int games_count = 0;
         double total_score = 0;
         int generation = 1;
@@ -39,12 +39,12 @@ namespace Tetris
         Tetrimino falling_tetrimino;
 
         const int normal_speed = 0;
-        const int fast_speed = 30;
-        const int drop_speed = 1;
-        const bool genetic = true;
+        const int fast_speed = 100;
+        const int drop_speed = 100;
+        const bool genetic = false;
         const bool auto = true;
 
-        int score = 0;
+        double score = 0;
         int top_score = 0;
         
         bool speed_key = false;
@@ -336,7 +336,7 @@ namespace Tetris
                 label_game.Content = "Games: " + ++games_count;
                 if (score > top_score)
                 {
-                    top_score = score;
+                    top_score = (int)score;
                     label_top.Content = "Top: " + top_score;
                 }
                 total_score += score;
@@ -423,11 +423,14 @@ namespace Tetris
 
         void check_win()
         {
+            double row_nr = 0;
             foreach (var box_list in static_boxes)
             {
+                row_nr++;
                 if (box_list.Value.Count == 10)
                 {
-                    score++;
+                    score += 1;// * (row_nr / 10);  // bonus for low rows
+                   
                     label_score.Content = "Score: " + score;
                     foreach (var box in box_list.Value)
                     {
