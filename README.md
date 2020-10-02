@@ -9,7 +9,7 @@ Every possible move is simulated and four heuristics are used for gamefield eval
 
 each value has a multiplier (successively a, b, c, d), so the complete equation looks like this:
 
-    field_value = Height * a + Complete lines * b + Holes * c + Bumpiness + d
+    field_value = Height * a + Complete lines * b + Holes * c + Bumpiness * d
 
 multipliers values are searched for with genetic algorithm.
 
