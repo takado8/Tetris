@@ -29,7 +29,7 @@ Now those with better fitness will reproduce. 10% of population is randomly sele
 Process repeats untill the population will be restored.
 Population is now tested again, and whole cycle repeats.
 
-After several hours the following set of number has been found:
+After several hours the following set of numbers has been found:
 
     a = -0.798752914564018
     b = 0.522287506868767
