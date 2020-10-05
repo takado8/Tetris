@@ -5,13 +5,13 @@ Tetris environment and AI for playing it.
 
 In each turn every possible move is simulated and evaluated using four heuristics:
 1. Height - summed height of the columns.
-2. Complete lines - number of completed lines.
+2. Complete_lines - number of completed lines.
 3. Holes - number of 'holes' - empty inaccessible spaces.
 4. Bumpiness - summed difference of adjacent columns height.
 
 each value has a multiplier (successively a, b, c, d), so the complete equation is as follows:
 ```python
-    field_value = Height * a + Complete lines * b + Holes * c + Bumpiness * d
+    field_value = Height * a + Complete_lines * b + Holes * c + Bumpiness * d
 ```
 multipliers values are searched for with genetic algorithm.
 
