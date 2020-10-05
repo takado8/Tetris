@@ -17,7 +17,7 @@ multipliers values are searched for with genetic algorithm.
 
 ## Genetic algorithm
 
-Genral purpose of genetic algorithms is to maximize (or minimize) a function - here called fitness function, through simplified evolutionary mechanisms observed in natural environment, such as natural selection and genetic variation.
+General purpose of genetic algorithms is to maximize (or minimize) a function - here called fitness function, through simplified evolutionary mechanisms observed in natural environment, such as natural selection and genetic variation.
 
 In this tetris environment, a goal is to maximize number of cleaned lines, using field evaluation formula from above.
 On start, set of vectors is initialized, each vector [a,b,c,d] has 4 floats (called genes) in range <-1;1>. Those vectors are called genotypes, and
