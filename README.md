@@ -32,7 +32,7 @@ Population is now tested again and whole cycle repeats.
 
 Genetic variability is provided by the crossing-over process and mutation.
 In this project, crossing-over process refers to creating a new genotype from existing two, by summing corresponding genes weighted towards more fitted parrent and normalizing derived vector.
-
+```python
     AI crossing_over(AI a, AI b)
     {
         AI c = new AI();
@@ -43,7 +43,7 @@ In this project, crossing-over process refers to creating a new genotype from ex
         c.normalize();
         return c;
     }
-
+```
 A mutation is a random addition to a gene value in the range <-0.2; 0.2>, which appears rather rarely (5% in this project).
 
     AI mutate(AI c)
