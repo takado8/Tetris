@@ -9,7 +9,7 @@ In each turn every possible move is simulated and evaluated using four heuristic
 3. Holes - number of 'holes' - empty inaccessible spaces.
 4. Bumpiness - summed difference of adjacent columns height.
 
-each value has a multiplier (successively a, b, c, d), so the complete equation looks like this:
+each value has a multiplier (successively a, b, c, d), so the complete equation is as follows:
 
     field_value = Height * a + Complete lines * b + Holes * c + Bumpiness * d
 
