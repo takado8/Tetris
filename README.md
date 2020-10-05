@@ -59,7 +59,7 @@ A mutation is a random addition to a gene value in the range <-0.2; 0.2>, which 
 
 ## Results
 
-After several hours the following set of numbers has been found:
+After several hours the following set of genes has been found:
 ```python
     a = -0.798752914564018
     b = 0.522287506868767
