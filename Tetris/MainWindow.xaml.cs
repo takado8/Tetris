@@ -38,11 +38,11 @@ namespace Tetris
         Dictionary<double, List<Tetrimino.Box>> static_boxes = new Dictionary<double, List<Tetrimino.Box>>();
         Tetrimino falling_tetrimino;
 
-        const int normal_speed = 0;
-        const int fast_speed = 100;
-        const int drop_speed = 100;
-        const bool genetic = false;
-        const bool auto = true;
+        int normal_speed = 0;
+        int fast_speed = 1;
+        int drop_speed = 1;
+        bool genetic = false;
+        bool auto = true;
 
         double score = 0;
         int top_score = 0;
@@ -57,6 +57,24 @@ namespace Tetris
         public MainWindow()
         {
             InitializeComponent();
+            string[] args = Environment.GetCommandLineArgs();
+            foreach (var arg in args)
+            {
+                if(arg.Equals("manual"))
+                {
+                    auto = false;
+                    genetic = false;
+                    normal_speed = 260;
+                    fast_speed = 50;
+                    drop_speed = 20;
+                }
+                else if(arg.Equals("evolution"))
+                {
+                    
+                    genetic = true;
+                    auto = true;
+                }
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
