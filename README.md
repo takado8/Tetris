@@ -10,9 +10,9 @@ In each turn every possible move is simulated and evaluated using four heuristic
 4. Bumpiness - summed difference of adjacent columns height.
 
 each value has a multiplier (successively a, b, c, d), so the complete equation is as follows:
-
+```python
     field_value = Height * a + Complete lines * b + Holes * c + Bumpiness * d
-
+```
 multipliers values are searched for with genetic algorithm.
 
 ## Genetic algorithm
@@ -45,7 +45,7 @@ In this project, crossing-over process refers to creating a new genotype from ex
     }
 ```
 A mutation is a random addition to a gene value in the range <-0.2; 0.2>, which appears rather rarely (5% in this project).
-
+```python
     AI mutate(AI c)
     {
         if (Rand.NextDouble() < mutation_rate)
@@ -55,17 +55,17 @@ A mutation is a random addition to a gene value in the range <-0.2; 0.2>, which 
         }
         return c;
     }
-
+```
 
 ## Results
 
 After several hours the following set of numbers has been found:
-
+```python
     a = -0.798752914564018
     b = 0.522287506868767
     c = -0.24921408023878
     d = -0.164626498034284
-
+```
 Created AI manage to clean over 2000 lines in one game.
 
 ![img1](/imgs/tetris1.jpg)
