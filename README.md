@@ -28,7 +28,7 @@ Each subject (genotype) will play one tetris game, using the values of its genes
 After the trial the weaker half of the population is removed.
 Now those with better fitness will reproduce. 10% of population is randomly selected, than best two will reproduce.
 Process repeats untill the population will be restored.
-Population is now tested again, and whole cycle repeats.
+Population is now tested again and whole cycle repeats.
 
 Genetic variability is provided by the crossing-over process and mutation.
 In this project, crossing-over process refers to creating a new genotype from existing two, by summing corresponding genes weighted towards more fitted parrent and normalizing derived vector.
