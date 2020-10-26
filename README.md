@@ -73,7 +73,7 @@ Created AI manage to clean over 2000 lines in one game.
 ## How to use
 
 Download [Tetris.exe](https://github.com/takado8/Tetris/blob/master/Tetris/Tetris.exe) or clone and build project.
-start program with parameter 'manual' - for user game mode, 'evolution' - to start the evolution or without any parameter to see how aforementioned AI is doing.
+start program with parameter 'manual' - for user game mode, 'evolution' - to start the evolution, or without any parameter to see how aforementioned AI is doing.
 
 ### Controls
 
