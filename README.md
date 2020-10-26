@@ -68,7 +68,7 @@ After several hours the following set of genes has been found:
 ```
 Created AI manage to clean over 2000 lines in one game.
 
-![img1](/imgs/tetris_game.gif)
+![img1](/imgs/tetris_game2.gif)
 
 ## How to use
 
