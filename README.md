@@ -68,4 +68,25 @@ After several hours the following set of genes has been found:
 ```
 Created AI manage to clean over 2000 lines in one game.
 
-![img1](/imgs/tetris1.jpg)
+![img1](/imgs/tetris_game.gif)
+
+## How to use
+
+Download [Tetris.exe](https://github.com/takado8/Tetris/blob/master/Tetris/Tetris.exe) or clone and build project.
+start program with parameter 'manual' - for user game mode, 'evolution' - to start the evolution or without any parameter to see how aforementioned AI is doing.
+
+### Controls
+
+#### User game mode
+
+move piece left or right - left and right arrow.
+rotate - up arrow.
+speed up - down arrow.
+drop piece - space
+
+#### Auto and Evolution mode
+slow down - space
+speed up - down arrow
+
+
+
