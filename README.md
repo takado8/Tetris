@@ -79,14 +79,13 @@ start program with parameter 'manual' - for user game mode, 'evolution' - to sta
 
 #### User game mode
 
-move piece left or right - left and right arrow.
-rotate - up arrow.
-speed up - down arrow.
-drop piece - space
+- move piece left or right - left and right arrow.
+- rotate - up arrow.
+- speed up - down arrow.
+- drop piece - space
 
 #### Auto and Evolution mode
-slow down - space
-speed up - down arrow
-
+- slow down - space
+- speed up - down arrow
 
 
