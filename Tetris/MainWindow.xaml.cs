@@ -24,10 +24,11 @@ namespace Tetris
     /// </summary>
     public partial class MainWindow : Window
     {
-        Genetics gen = new Genetics();
+        Genetics gen;
+        const int population_count = 40;
 
         int ai_index = 0;
-        int tetrimino_limit = 500;
+       // int tetrimino_limit = 500;
         int tetrimino_count = 1;
         int games_limit = 1;
         int games_count = 0;
@@ -39,8 +40,8 @@ namespace Tetris
         Tetrimino falling_tetrimino;
 
         int normal_speed = 0;
-        int fast_speed = 1;
-        int drop_speed = 1;
+        int fast_speed = 20;
+        int drop_speed = 20;
         bool genetic = false;
         bool auto = true;
 
@@ -49,10 +50,10 @@ namespace Tetris
         
         bool speed_key = false;
 
-        double a = -0.798752914564018;//-0.510066;  //accumulate height
-        double b = 0.522287506868767;//0.760666;     //complete lines
-        double c = -0.24921408023878;//-0.35633;   //holes
-        double d = -0.164626498034284;//-0.184483;  //bumpiness
+        double a = -0.798752914564018; //accumulated height
+        double b = 0.522287506868767;  //complete lines
+        double c = -0.24921408023878;  //holes
+        double d = -0.164626498034284; //bumpiness
 
         public MainWindow()
         {
@@ -70,10 +71,31 @@ namespace Tetris
                 }
                 else if(arg.Equals("evolution"))
                 {
-                    
                     genetic = true;
                     auto = true;
-                }
+                    label_index.Visibility = Visibility.Visible;
+                    //label_tetr_count.Visibility = Visibility.Visible;
+                    label_gen.Visibility = Visibility.Visible;
+                    label_game.Visibility = Visibility.Hidden;
+                    int pop_count = population_count;
+                    if (args.Length > 2)
+                    {
+                        try
+                        {
+                            int arg_population_count = int.Parse(args[2]);
+                            if (arg_population_count > 20)
+                            {
+                                if(arg_population_count % 2 != 0)
+                                {
+                                    arg_population_count--;
+                                }
+                                pop_count = arg_population_count;
+                            }
+                        }
+                        catch {}
+                    }
+                    gen = new Genetics(pop_count);
+                } 
             }
         }
 
@@ -343,7 +365,7 @@ namespace Tetris
             }
             label_tetr_count.Content = "Tetr: " + (tetrimino_count + 1);
 
-            if (check_loose() || (tetrimino_count++ == tetrimino_limit && genetic)) // next game
+            if (check_loose())// || (tetrimino_count++ == tetrimino_limit && genetic)) // next game
             {
                 if (!genetic)
                 {
@@ -382,7 +404,7 @@ namespace Tetris
                     b = gen.population[ai_index][1];
                     c = gen.population[ai_index][2];
                     d = gen.population[ai_index][3];
-                    label_index.Content = "AI: " + (ai_index + 1);
+                    label_index.Content = "AI: " + (ai_index + 1) + "/" + gen.population.Count;
                 }
             }
             check_win();

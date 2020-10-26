@@ -16,10 +16,10 @@
         <Label x:Name="label_pause" Visibility="Hidden" Content="PAUSE" FontFamily="Trebuchet MS" FontSize="33" Foreground="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="104,102,0,0" Height="47" Width="100"/>
         <Label x:Name="label_top" Content="Top: 0" FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,80,0,0" Height="47" Width="157"/>
         <Label x:Name="label_score" Content="Score: 0" FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,33,0,0" Height="47" Width="156"/>
-        <Label x:Name="label_index" Content="AI: 1" FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,123,0,0" Height="47" Width="157"/>
+        <Label x:Name="label_index" Visibility="Hidden" Content="AI: 1" FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,123,0,0" Height="47" Width="157"/>
         <Label x:Name="label_game" Content="Games: 0" FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,161,0,0" Height="47" Width="157"/>
-        <Label x:Name="label_tetr_count" Content="Tetr: 1" FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,196,0,0" Height="47" Width="157"/>
-        <Label x:Name="label_gen" Content="Gen: 1" FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,235,0,0" Height="47" Width="157"/>
+        <Label x:Name="label_tetr_count" Visibility="Hidden" Content="Tetr: 1" FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,196,0,0" Height="47" Width="157"/>
+        <Label x:Name="label_gen" Visibility="Hidden" Content="Generation: 1" FontFamily="Trebuchet MS" FontSize="20" Foreground="Silver" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="303,235,0,0" Height="47" Width="157"/>
 
     </Grid>
 </Window>
