@@ -3,7 +3,7 @@ Tetris environment and AI for playing it.
 
 ## AI algorithm:
 
-In each turn every possible move is simulated and evaluated using four heuristics:
+In each turn, every possible move is simulated and the game field is evaluated using four heuristics:
 1. Height - summed height of the columns.
 2. Complete_lines - number of completed lines.
 3. Holes - number of 'holes' - empty inaccessible spaces.
@@ -21,12 +21,12 @@ General purpose of genetic algorithms is to maximize (or minimize) a function - 
 
 In this tetris environment, a goal is to maximize number of cleaned lines, using field evaluation formula from above.
 On start, set of vectors is initialized, each vector [a,b,c,d] has 4 floats (called genes) in range <-1;1>. Those vectors are called genotypes, and
-all together makes a population.
+all together make a population.
 
 Natural selection is based on competition - those with best fitness to environment are more likely to survive and reproduce.
 Each subject (genotype) will play one tetris game, using the values of its genes substituted in the field evaluation formula. fitness function is simple: +1 point for 1 cleaned line untill gameover.
-After the trial the weaker half of the population is removed.
-Now those with better fitness will reproduce. 10% of population is randomly selected, than best two will reproduce.
+After the trial, the weaker half of the population is removed.
+Now those with better fitness will reproduce. 10% of population is randomly selected and the top two will reproduce.
 Process repeats untill the population will be restored.
 Population is now tested again and whole cycle repeats.
 
