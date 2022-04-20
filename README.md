@@ -1,6 +1,8 @@
 # Tetris
 Tetris environment and AI for playing it.
 
+This is an old version [see new one.](https://github.com/takado8/TetrisAI)
+
 ## AI algorithm:
 
 In each turn, every possible move is simulated and the game field is evaluated using four heuristics:
